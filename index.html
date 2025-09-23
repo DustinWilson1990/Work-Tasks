@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Work Tasks</title>
   <style>
-    /* ========= Alkegen-ish theme (tweak anytime) ========= */
     :root{
-      /* If you get official brand hexes, replace these 2 lines */
-      --brand:#1d3f8a;          /* deep Alkegen navy (approx)  */
-      --accent:#59c135;         /* Alkegen arc green (approx) */
+      --brand:#1d3f8a;          /* Alkegen navy (approx) */
+      --accent:#59c135;         /* Alkegen green (approx) */
 
       --bg:#0e1116; --card:#151a24; --text:#eef2f7; --muted:#a3adbd; --border:#273045;
       --shadow:0 12px 40px rgba(0,0,0,.5);
@@ -23,7 +21,6 @@
     html,body{height:100%}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
 
-    /* Top bar */
     .navTop{position:sticky;top:0;z-index:20;backdrop-filter:blur(6px);
       background:linear-gradient(to bottom,color-mix(in srgb,var(--bg) 92%,transparent),transparent);
       border-bottom:2px solid color-mix(in srgb,var(--brand) 40%, var(--border))}
@@ -35,11 +32,9 @@
     .muted{color:var(--muted);font-size:12px}
     .topBtn{font-size:14px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text)}
 
-    /* Accent underline on headings */
     h3{margin:0 0 10px}
     h3::after{content:"";display:block;width:36px;height:3px;background:var(--accent);border-radius:2px;margin-top:6px}
 
-    /* App area */
     .app{max-width:1100px;margin:0 auto;padding:14px;padding-bottom:120px;min-height:calc(var(--vh) - 50px)}
     .card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:14px;margin:12px 0}
     .row{display:flex;gap:8px;flex-wrap:wrap}
@@ -52,7 +47,6 @@
     .mini{font-size:12px}
     .divider{height:1px;background:var(--border);margin:8px 0}
 
-    /* Table / cards */
     .tableWrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px}
     table{width:100%;border-collapse:collapse}
     th,td{text-align:left;border-bottom:1px solid var(--border);padding:10px 8px;vertical-align:top}
@@ -78,7 +72,6 @@
       .brandText{display:none}
     }
 
-    /* Tabs (sticky) */
     .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--tabbg);
       border-top:2px solid color-mix(in srgb,var(--brand) 40%, var(--tab-border));
       padding:8px 10px  calc(8px + env(safe-area-inset-bottom));
@@ -93,13 +86,11 @@
     .hidden{display:none!important}
     .ok{color:var(--ok)} .danger{color:var(--danger)}
 
-    /* Drag & drop upload */
     .drop{border:2px dashed color-mix(in srgb,var(--brand) 40%, var(--border)); border-radius:12px; padding:16px; text-align:center}
     .drop.drag{background:color-mix(in srgb,var(--brand) 10%, transparent)}
   </style>
 </head>
 <body>
-  <!-- Top bar -->
   <div class="navTop">
     <div class="navTopInner">
       <div class="brand">
@@ -194,7 +185,7 @@
       <!-- CSV importer -->
       <div class="card">
         <h3>Import from Spreadsheet (Single CSV)</h3>
-        <p class="hint">Export the whole sheet as CSV. Expected columns: A=Name, B=Count(ignored), C…AG=Days (Ref numbers), AH=Area, AI=Ref, AJ/AK ignored.</p>
+        <p class="hint">Export the whole sheet as CSV. Expected: A=Name, B=Count(ignored), C…AG=Days (Ref numbers), AH=Area, AI=Ref, AJ/AK ignored.</p>
         <div class="row">
           <select id="impMonth"><option value="">Month…</option></select>
           <select id="impYear"><option value="">Year…</option></select>
@@ -214,14 +205,11 @@
         </div>
       </div>
 
-      <!-- OCR importer (now: camera or gallery + drag&drop) -->
+      <!-- OCR importer -->
       <div class="card">
         <h3>Scan Sheet (Photo)</h3>
-        <p class="hint">You can take a photo or choose one from your gallery. Drag & drop works on desktop. CSV is still most accurate.</p>
-        <div class="row">
-          <!-- Removed capture attribute so gallery files are allowed -->
-          <input id="sheetImage" type="file" accept="image/*" />
-        </div>
+        <p class="hint">Take a photo or choose from gallery. Drag & drop works on desktop. CSV is most accurate.</p>
+        <div class="row"><input id="sheetImage" type="file" accept="image/*" /></div>
         <div id="dropZone" class="drop mini">Drag & drop an image here</div>
         <div id="ocrStatus" class="hint"></div>
         <div id="sheetPreview" class="hidden">
@@ -255,7 +243,6 @@
     </section>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs hidden" id="tabs">
     <button class="tabBtn" data-route="#/tasks"><span class="tabIcon">🗂️</span><span>Tasks</span></button>
     <button class="tabBtn" data-route="#/create"><span class="tabIcon">📄</span><span>Create</span></button>
@@ -265,13 +252,12 @@
   <div id="toast" class="toast">Saved</div>
   <div id="debug"></div>
 
-  <!-- Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
 
   <script type="module">
     /* ===== Brand assets ===== */
-    const LOGO_URL = ""; // <- paste an official Alkegen logo URL (PNG/SVG) here when you have it.
+    const LOGO_URL = ""; // paste an official Alkegen logo URL if you have one
     const logoImg = document.getElementById('logoImg');
     if (LOGO_URL) logoImg.src = LOGO_URL; else logoImg.style.background = `linear-gradient(135deg, var(--brand), var(--accent))`;
 
@@ -292,15 +278,18 @@
     const auth = getAuth(app);
     const db   = getFirestore(app);
 
-    /* ===== Utilities & routing (unchanged) ===== */
+    /* ===== Utilities & routing ===== */
     const $ = (id)=>document.getElementById(id);
     const toast = $('toast'), debugBox = $('debug');
     const pages={'#/auth':$('page-auth'),'#/tasks':$('page-tasks'),'#/create':$('page-create'),'#/profile':$('page-profile')};
     const tabs=$('tabs'), authStatus=$('authStatus'), btnSignOut=$('btnSignOut');
-    function show(el){ el.classList.remove('hidden'); } function hide(el){ el.classList.add('hidden'); }
+
+    function show(el){ el.classList.remove('hidden'); } 
+    function hide(el){ el.classList.add('hidden'); }
     function toastMsg(m='Saved'){ toast.textContent=m; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1200); }
     const isDebug = location.search.includes('debug');
     const dlog=(m)=>{ if(!isDebug) return; debugBox.style.display='block'; debugBox.textContent+=m+'\\n'; };
+
     function routeActive(route){ document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active', b.dataset.route===route)); }
     function go(route){
       if (!currentUser && route!=='#/auth') route = '#/auth';
@@ -313,7 +302,8 @@
     }
     window.addEventListener('hashchange', ()=>go(location.hash||('#/auth')));
     document.querySelectorAll('.tabBtn').forEach(b=> b.onclick=()=> go(b.dataset.route));
-    function setVh(){ const vh=Math.max(innerHeight, document.documentElement.clientHeight); document.documentElement.style.setProperty('--vh', vh+'px'); } setVh(); addEventListener('resize', setVh);
+    function setVh(){ const vh=Math.max(innerHeight, document.documentElement.clientHeight); document.documentElement.style.setProperty('--vh', vh+'px'); } 
+    setVh(); addEventListener('resize', setVh);
 
     /* ===== State ===== */
     let currentUser=null, isMod=false, allTasks=[];
@@ -322,7 +312,6 @@
     /* ===== DOM refs ===== */
     const emailEl=$('email'), passEl=$('password'), btnSignIn=$('btnSignIn'), btnSignUp=$('btnSignUp');
     const btnToggleFilters=$('btnToggleFilters'), filtersCard=$('filtersCard'), filtersBody=$('filtersBody');
-    btnToggleFilters.onclick=()=>{ filtersCard.classList.toggle('open'); btnToggleFilters.textContent=filtersCard.classList.contains('open')?'Hide':'Show'; };
     const searchInput=$('searchInput'), statusFilter=$('statusFilter'), priorityFilter=$('priorityFilter'), scopeFilter=$('scopeFilter'), taskTbody=$('taskTbody');
     const newTitle=$('newTitle'), newDesc=$('newDesc'), newPriority=$('newPriority'), newDue=$('newDue'), newAssignees=$('newAssignees'), btnCreate=$('btnCreate'), modHint=$('modHint');
     const profName=$('profName'), profJob=$('profJob'), profPhoto=$('profPhoto'), btnSaveProfile=$('btnSaveProfile'), btnRefreshProfile=$('btnRefreshProfile');
@@ -332,20 +321,12 @@
     const csvInfo=$('csvInfo'), csvPreview=$('csvPreview'), csvList=$('csvList'), btnCreateCsvTasks=$('btnCreateCsvTasks');
     const impMonth=$('impMonth'), impYear=$('impYear');
 
-    // OCR refs (camera or gallery + drag&drop)
+    // OCR refs
     const sheetImage=$('sheetImage'), sheetPreview=$('sheetPreview'), ocrStatus=$('ocrStatus');
     const btnExtract=$('btnExtract'), btnClearPreview=$('btnClearPreview'), previewList=$('previewList'), bulkActions=$('bulkActions');
     const dropZone = $('dropZone');
 
-    // Month/year options
-    (function initMonthYear(){
-      const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-      months.forEach((m,i)=>{ const o=document.createElement('option'); o.value=(i+1); o.textContent=m; impMonth.appendChild(o); });
-      const yNow=new Date().getFullYear();
-      for(let y=yNow-1;y<=yNow+2;y++){ const o=document.createElement('option'); o.value=y; o.textContent=y; impYear.appendChild(o); }
-    })();
-
-    /* ===== Helpers (same as before) ===== */
+    /* ===== Helpers ===== */
     async function ensureUserProfile(user){
       const r=doc(db,'users',user.uid), s=await getDoc(r);
       if(!s.exists()) await setDoc(r,{uid:user.uid,email:user.email||'',name:'',jobTitle:'',photoURL:'',createdAt:serverTimestamp()});
@@ -353,6 +334,7 @@
     async function isModerator(uid){ const s=await getDoc(doc(db,'moderators',uid)); return s.exists(); }
     async function loadMyProfile(uid){ const s=await getDoc(doc(db,'users',uid)); if(s.exists()){ const u=s.data(); profName.value=u.name||''; profJob.value=u.jobTitle||''; profPhoto.value=u.photoURL||''; } }
     async function saveMyProfile(uid){ await setDoc(doc(db,'users',uid),{name:profName.value.trim(),jobTitle:profJob.value.trim(),photoURL:profPhoto.value.trim(),updatedAt:serverTimestamp()},{merge:true}); }
+
     function uidToInitials(uid){ const u=usersMap.get(uid); const src=(u?.name?.trim()||u?.email||'??').split('@')[0]; const parts=src.replace(/[^a-zA-Z0-9 ]/g,' ').trim().split(/\s+/); return (parts[0]||'?').charAt(0).toUpperCase()+(parts[1]||'').charAt(0).toUpperCase(); }
     function avatarEl(uid){ const u=usersMap.get(uid)||{}; const el=document.createElement('div'); el.className='avatar'; if(u.photoURL) el.innerHTML=`<img src="${u.photoURL}" alt="">`; else el.textContent=uidToInitials(uid); return el; }
     function deriveStatus(t){ const a=(t.assignees||[]).length, c=(t.completedBy||[]).length; if(a===0||c===0) return 'todo'; if(c<a) return 'in_progress'; return 'done'; }
@@ -392,7 +374,7 @@
       unsubTasks=onSnapshot(qy,(snap)=>{ allTasks=snap.docs.map(d=>({id:d.id,...d.data()})); renderTasks(); });
     }
 
-    /* ===== Render tasks ===== */
+    /* ===== Render ===== */
     function applyFilters(items){
       const q=(searchInput.value||'').toLowerCase(), fStatus=statusFilter.value, fPrio=priorityFilter.value, scope=isMod?scopeFilter.value:'mine';
       let arr=items.slice();
@@ -405,7 +387,6 @@
         const da=a.dueDate||'', db=b.dueDate||''; if(da!==db) return (da||'9999-99-99').localeCompare(db||'9999-99-99'); return (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0);});
       return arr;
     }
-    const taskTbody=$('taskTbody');
     function renderTasks(){
       const rows=applyFilters(allTasks); taskTbody.innerHTML='';
       rows.forEach(row=>{
@@ -484,7 +465,6 @@
     }
 
     /* ===== Create single task ===== */
-    const btnCreate=$('btnCreate'), newTitle=$('newTitle'), newDesc=$('newDesc'), newPriority=$('newPriority'), newDue=$('newDue'), newAssignees=$('newAssignees'), modHint=$('modHint');
     btnCreate.onclick=async()=>{
       if(!isMod) return alert('Only moderators can create.');
       const title=newTitle.value.trim(); if(!title) return alert('Enter a title');
@@ -496,7 +476,7 @@
       toastMsg('Task created');
     };
 
-    /* ===== CSV (Single file) – same logic as our last version ===== */
+    /* ===== CSV (Single file) ===== */
     function parseCsvRaw(file){ return new Promise((resolve,reject)=> Papa.parse(file,{header:false,skipEmptyLines:true,complete:res=>resolve(res.data),error:reject})); }
     function splitAreaFocus(areaCell){
       if(!areaCell) return {title:'', desc:''};
@@ -505,18 +485,6 @@
       if(focusMatch){ title=focusMatch[1].trim(); desc='Focus: '+focusMatch[2].trim(); }
       else{ const dash = s.split(/–|-/); if(dash.length>1){ title=dash[0].trim(); desc=dash.slice(1).join('-').trim(); } }
       return {title, desc};
-    }
-    function endOfMonth(year, month1to12){ return new Date(year, month1to12, 0); }
-    function priorityFromDaysLeft(daysLeft){ if(daysLeft<=10) return 'urgent'; if(daysLeft<=20) return 'high'; return 'normal'; }
-    function nameToUid(name){
-      const target=(name||'').toLowerCase().trim().replace(/\s+\(.*?\)\s*$/,'');
-      for(const [uid,u] of usersMap.entries()){
-        const nm=(u.name||'').toLowerCase().trim();
-        if(!nm) continue;
-        if(nm===target) return uid;
-        if(nm.includes(target) || target.includes(nm)) return uid;
-      }
-      return null;
     }
     function buildTasksFromSingleCsv(rows, year, month){
       const COL_NAME=0, COL_DAY_START=2, COL_DAY_END=32, COL_AREA=33, COL_REF=34;
@@ -545,7 +513,6 @@
       }
       return tasks;
     }
-    const csvOne=$('csvOne'), csvInfo=$('csvInfo'), csvPreview=$('csvPreview'), csvList=$('csvList'), btnParseSingleCsv=$('btnParseSingleCsv'), btnCreateCsvTasks=$('btnCreateCsvTasks'), btnClearCsv=$('btnClearCsv'), impMonth=$('impMonth'), impYear=$('impYear');
     btnClearCsv.onclick=()=>{ csvOne.value=''; csvList.innerHTML=''; csvPreview.classList.add('hidden'); csvInfo.textContent=''; };
     btnParseSingleCsv.onclick=async()=>{
       if(!isMod) return alert('Only moderators can import.');
@@ -584,31 +551,16 @@
       csvPreview.classList.add('hidden'); csvList.innerHTML=''; csvInfo.textContent=''; csvOne.value='';
     };
 
-    /* ===== OCR (camera or gallery) ===== */
+    /* ===== OCR (camera or gallery + drag&drop) ===== */
     let ocrImageBlob = null;
     sheetImage.onchange = () => { const f = sheetImage.files?.[0]; if(!f) return; ocrImageBlob=f; sheetPreview.classList.remove('hidden'); ocrStatus.textContent=`Selected: ${f.name}`; previewList.innerHTML=''; bulkActions.classList.add('hidden'); };
-
-    // drag & drop
     ;['dragenter','dragover'].forEach(evt=>dropZone.addEventListener(evt,e=>{e.preventDefault(); dropZone.classList.add('drag');}));
     ;['dragleave','drop'].forEach(evt=>dropZone.addEventListener(evt,e=>{e.preventDefault(); dropZone.classList.remove('drag');}));
     dropZone.addEventListener('drop', (e)=>{ const f=e.dataTransfer.files?.[0]; if(f && f.type.startsWith('image/')){ ocrImageBlob=f; sheetPreview.classList.remove('hidden'); ocrStatus.textContent=`Selected: ${f.name}`; previewList.innerHTML=''; bulkActions.classList.add('hidden'); } });
 
-    const T = window.Tesseract;
-    function splitAreaFocus(areaCell){
-      if(!areaCell) return {title:'', desc:''};
-      let s=String(areaCell).trim(); let title=s, desc='';
-      const focusMatch = s.match(/^(.*?)[–-]\s*focus on\s*(.*)$/i);
-      if(focusMatch){ title=focusMatch[1].trim(); desc='Focus: '+focusMatch[2].trim(); }
-      else{ const dash = s.split(/–|-/); if(dash.length>1){ title=dash[0].trim(); desc=dash.slice(1).join('-').trim(); } }
-      return {title, desc};
-    }
-    function endOfMonth(year, month1to12){ return new Date(year, month1to12, 0); }
-    function priorityFromDaysLeft(daysLeft){ if(daysLeft<=10) return 'urgent'; if(daysLeft<=20) return 'high'; return 'normal'; }
-
     function parseOcrToTasks(rawText, year, month){
       const lines = rawText.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
       const lib = new Map();
-      // build library from lines like "... Ref 7" etc
       for(const ln of lines){
         const m = ln.match(/^(.*?)(?:\s*[–-]\s*focus on\s*(.*?))?\s+ref[:\s]*([0-9]+)\b/i);
         if(m){
@@ -639,7 +591,6 @@
       return tasks;
     }
 
-    const btnExtract=$('btnExtract'), btnClearPreview=$('btnClearPreview'), previewList=$('previewList'), bulkActions=$('bulkActions'), ocrStatus=$('ocrStatus'), sheetPreview=$('sheetPreview'), sheetImage=$('sheetImage');
     btnClearPreview.onclick = () => { sheetImage.value = ''; ocrImageBlob = null; sheetPreview.classList.add('hidden'); ocrStatus.textContent = ''; previewList.innerHTML = ''; bulkActions.classList.add('hidden'); };
     btnExtract.onclick = async () => {
       if (!isMod) return alert('Only moderators can use Scan Sheet.');
@@ -650,7 +601,7 @@
 
       ocrStatus.textContent = 'Reading image…'; previewList.innerHTML=''; bulkActions.classList.add('hidden');
       try{
-        const { data } = await Tesseract.recognize(ocrImageBlob, 'eng', { logger: m => { if (m.status) ocrStatus.textContent = `${m.status} ${m.progress?Math.round(m.progress*100)+'%':''}`; } });
+        const { data } = await window.Tesseract.recognize(ocrImageBlob, 'eng', { logger: m => { if (m.status) ocrStatus.textContent = `${m.status} ${m.progress?Math.round(m.progress*100)+'%':''}`; } });
         const tasks = parseOcrToTasks(data.text||'', y, m);
         if(!tasks.length){ ocrStatus.innerHTML = '<span class="danger">Could not parse tasks from photo. Try CSV for accuracy.</span>'; return; }
         ocrStatus.innerHTML = `<span class="ok">Parsed ${tasks.length} candidate task(s). Review below.</span>`;
@@ -682,32 +633,35 @@
 
     /* ===== Filters & profile ===== */
     [searchInput,statusFilter,priorityFilter].forEach(el=>{el.addEventListener('input',renderTasks);el.addEventListener('change',renderTasks);});
+    btnToggleFilters.onclick=()=>{ filtersCard.classList.toggle('open'); btnToggleFilters.textContent=filtersCard.classList.contains('open')?'Hide':'Show'; };
     scopeFilter.addEventListener('change',()=>watchTasks());
-    $('btnSaveProfile').onclick=async()=>{ if(!currentUser) return; try{ await setDoc(doc(db,'users',currentUser.uid),{name:profName.value.trim(),jobTitle:profJob.value.trim(),photoURL:profPhoto.value.trim(),updatedAt:serverTimestamp()},{merge:true}); toastMsg('Profile saved'); }catch(e){ alert('Error: '+e.message);} };
-    $('btnRefreshProfile').onclick=async()=>{ if(!currentUser) return; const s=await getDoc(doc(db,'users',currentUser.uid)); if(s.exists()){ const u=s.data(); profName.value=u.name||''; profJob.value=u.jobTitle||''; profPhoto.value=u.photoURL||''; } };
+    btnSaveProfile.onclick=async()=>{ if(!currentUser) return; try{ await saveMyProfile(currentUser.uid); toastMsg('Profile saved'); }catch(e){ alert('Error: '+e.message);} };
+    btnRefreshProfile.onclick=async()=>{ if(!currentUser) return; await loadMyProfile(currentUser.uid); };
 
     /* ===== Auth ===== */
-    $('btnSignIn').onclick=async()=>{ try{ await signInWithEmailAndPassword(auth,$('email').value,$('password').value);}catch(e){ alert(e.message); } };
-    $('btnSignUp').onclick =async()=>{ try{ await createUserWithEmailAndPassword(auth,$('email').value,$('password').value);}catch(e){ alert(e.message); } };
+    btnSignIn.onclick=async()=>{ try{ await signInWithEmailAndPassword(auth,emailEl.value,passEl.value);}catch(e){ alert(e.message); } };
+    btnSignUp.onclick =async()=>{ try{ await createUserWithEmailAndPassword(auth,emailEl.value,passEl.value);}catch(e){ alert(e.message); } };
     btnSignOut.onclick=async()=>{ await signOut(auth); };
 
     async function startData(){ await watchUsers(); scopeFilter.classList.toggle('hidden', !isMod); scopeFilter.value='mine'; await watchTasks(); }
+
     onAuthStateChanged(auth, async (user)=>{
       currentUser=user||null;
       if(user){
-        $('btnSignOut').classList.remove('hidden');
+        btnSignOut.classList.remove('hidden');
         authStatus.textContent=`Signed in`;
         await ensureUserProfile(user); await loadMyProfile(user.uid);
         isMod = await isModerator(user.uid);
         modHint.classList.toggle('hidden', isMod);
         startData(); go('#/tasks');
       }else{
-        $('btnSignOut').classList.add('hidden');
+        btnSignOut.classList.add('hidden');
         authStatus.textContent='Not signed in';
         if (unsubTasks){unsubTasks();unsubTasks=null;} if (unsubUsers){unsubUsers();unsubUsers=null;}
         allTasks=[]; renderTasks(); go('#/auth');
       }
     });
+
     window.addEventListener('load', ()=> go(location.hash || '#/auth'));
   </script>
 </body>
