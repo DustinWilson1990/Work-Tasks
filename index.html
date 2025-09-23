@@ -6,8 +6,9 @@
   <title>Work Tasks</title>
   <style>
     :root{
-      --brand:#1d3f8a;          /* Alkegen navy (approx) */
-      --accent:#59c135;         /* Alkegen green (approx) */
+      /* Swap with official Alkegen hex codes when you have them */
+      --brand:#1d3f8a;      /* deep navy */
+      --accent:#59c135;     /* green accent */
 
       --bg:#0e1116; --card:#151a24; --text:#eef2f7; --muted:#a3adbd; --border:#273045;
       --shadow:0 12px 40px rgba(0,0,0,.5);
@@ -185,7 +186,7 @@
       <!-- CSV importer -->
       <div class="card">
         <h3>Import from Spreadsheet (Single CSV)</h3>
-        <p class="hint">Export the whole sheet as CSV. Expected: A=Name, B=Count(ignored), C…AG=Days (Ref numbers), AH=Area, AI=Ref, AJ/AK ignored.</p>
+        <p class="hint">Export the whole sheet as CSV. Expected: A=Name, B=Count(ignored), C…AG=Days (Refs), AH=Area, AI=Ref, AJ/AK ignored.</p>
         <div class="row">
           <select id="impMonth"><option value="">Month…</option></select>
           <select id="impYear"><option value="">Year…</option></select>
@@ -208,8 +209,10 @@
       <!-- OCR importer -->
       <div class="card">
         <h3>Scan Sheet (Photo)</h3>
-        <p class="hint">Take a photo or choose from gallery. Drag & drop works on desktop. CSV is most accurate.</p>
-        <div class="row"><input id="sheetImage" type="file" accept="image/*" /></div>
+        <p class="hint">Choose from camera or gallery. Drag & drop works on desktop. CSV is still most accurate.</p>
+        <div class="row">
+          <input id="sheetImage" type="file" accept="image/*" />
+        </div>
         <div id="dropZone" class="drop mini">Drag & drop an image here</div>
         <div id="ocrStatus" class="hint"></div>
         <div id="sheetPreview" class="hidden">
@@ -243,6 +246,7 @@
     </section>
   </div>
 
+  <!-- Tabs -->
   <div class="tabs hidden" id="tabs">
     <button class="tabBtn" data-route="#/tasks"><span class="tabIcon">🗂️</span><span>Tasks</span></button>
     <button class="tabBtn" data-route="#/create"><span class="tabIcon">📄</span><span>Create</span></button>
@@ -252,16 +256,24 @@
   <div id="toast" class="toast">Saved</div>
   <div id="debug"></div>
 
+  <!-- Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
 
   <script type="module">
-    /* ===== Brand assets ===== */
-    const LOGO_URL = ""; // paste an official Alkegen logo URL if you have one
+    /* ---------- Tiny error surface so issues aren’t silent ---------- */
+    window.addEventListener('error', e => {
+      const box = document.getElementById('debug');
+      box.style.display='block';
+      box.textContent += 'Error: ' + (e.message || e.error?.message) + '\\n';
+    });
+
+    /* ---------- Brand assets ---------- */
+    const LOGO_URL = ""; // paste official Alkegen logo URL if you have one
     const logoImg = document.getElementById('logoImg');
     if (LOGO_URL) logoImg.src = LOGO_URL; else logoImg.style.background = `linear-gradient(135deg, var(--brand), var(--accent))`;
 
-    /* ===== Firebase ===== */
+    /* ---------- Firebase ---------- */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, collection, query, where, orderBy, onSnapshot, doc, updateDoc, addDoc, serverTimestamp, getDoc, setDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -278,18 +290,14 @@
     const auth = getAuth(app);
     const db   = getFirestore(app);
 
-    /* ===== Utilities & routing ===== */
+    /* ---------- Utilities & routing ---------- */
     const $ = (id)=>document.getElementById(id);
     const toast = $('toast'), debugBox = $('debug');
     const pages={'#/auth':$('page-auth'),'#/tasks':$('page-tasks'),'#/create':$('page-create'),'#/profile':$('page-profile')};
     const tabs=$('tabs'), authStatus=$('authStatus'), btnSignOut=$('btnSignOut');
 
-    function show(el){ el.classList.remove('hidden'); } 
-    function hide(el){ el.classList.add('hidden'); }
+    function show(el){ el.classList.remove('hidden'); } function hide(el){ el.classList.add('hidden'); }
     function toastMsg(m='Saved'){ toast.textContent=m; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1200); }
-    const isDebug = location.search.includes('debug');
-    const dlog=(m)=>{ if(!isDebug) return; debugBox.style.display='block'; debugBox.textContent+=m+'\\n'; };
-
     function routeActive(route){ document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active', b.dataset.route===route)); }
     function go(route){
       if (!currentUser && route!=='#/auth') route = '#/auth';
@@ -302,48 +310,24 @@
     }
     window.addEventListener('hashchange', ()=>go(location.hash||('#/auth')));
     document.querySelectorAll('.tabBtn').forEach(b=> b.onclick=()=> go(b.dataset.route));
-    function setVh(){ const vh=Math.max(innerHeight, document.documentElement.clientHeight); document.documentElement.style.setProperty('--vh', vh+'px'); } 
-    setVh(); addEventListener('resize', setVh);
+    function setVh(){ const vh=Math.max(innerHeight, document.documentElement.clientHeight); document.documentElement.style.setProperty('--vh', vh+'px'); } setVh(); addEventListener('resize', setVh);
 
-    /* ===== State ===== */
+    /* ---------- State ---------- */
     let currentUser=null, isMod=false, allTasks=[];
     const usersMap=new Map(); let unsubUsers=null, unsubTasks=null;
 
-    /* ===== DOM refs ===== */
-    const emailEl=$('email'), passEl=$('password'), btnSignIn=$('btnSignIn'), btnSignUp=$('btnSignUp');
-    const btnToggleFilters=$('btnToggleFilters'), filtersCard=$('filtersCard'), filtersBody=$('filtersBody');
-    const searchInput=$('searchInput'), statusFilter=$('statusFilter'), priorityFilter=$('priorityFilter'), scopeFilter=$('scopeFilter'), taskTbody=$('taskTbody');
-    const newTitle=$('newTitle'), newDesc=$('newDesc'), newPriority=$('newPriority'), newDue=$('newDue'), newAssignees=$('newAssignees'), btnCreate=$('btnCreate'), modHint=$('modHint');
-    const profName=$('profName'), profJob=$('profJob'), profPhoto=$('profPhoto'), btnSaveProfile=$('btnSaveProfile'), btnRefreshProfile=$('btnRefreshProfile');
-
-    // Importer refs
-    const csvOne=$('csvOne'), btnParseSingleCsv=$('btnParseSingleCsv'), btnClearCsv=$('btnClearCsv');
-    const csvInfo=$('csvInfo'), csvPreview=$('csvPreview'), csvList=$('csvList'), btnCreateCsvTasks=$('btnCreateCsvTasks');
-    const impMonth=$('impMonth'), impYear=$('impYear');
-
-    // OCR refs
-    const sheetImage=$('sheetImage'), sheetPreview=$('sheetPreview'), ocrStatus=$('ocrStatus');
-    const btnExtract=$('btnExtract'), btnClearPreview=$('btnClearPreview'), previewList=$('previewList'), bulkActions=$('bulkActions');
-    const dropZone = $('dropZone');
-
-    /* ===== Helpers ===== */
+    /* ---------- Common helpers ---------- */
     async function ensureUserProfile(user){
       const r=doc(db,'users',user.uid), s=await getDoc(r);
       if(!s.exists()) await setDoc(r,{uid:user.uid,email:user.email||'',name:'',jobTitle:'',photoURL:'',createdAt:serverTimestamp()});
     }
     async function isModerator(uid){ const s=await getDoc(doc(db,'moderators',uid)); return s.exists(); }
-    async function loadMyProfile(uid){ const s=await getDoc(doc(db,'users',uid)); if(s.exists()){ const u=s.data(); profName.value=u.name||''; profJob.value=u.jobTitle||''; profPhoto.value=u.photoURL||''; } }
-    async function saveMyProfile(uid){ await setDoc(doc(db,'users',uid),{name:profName.value.trim(),jobTitle:profJob.value.trim(),photoURL:profPhoto.value.trim(),updatedAt:serverTimestamp()},{merge:true}); }
+    async function loadMyProfile(uid){ const s=await getDoc(doc(db,'users',uid)); if(s.exists()){ const u=s.data(); $('profName').value=u.name||''; $('profJob').value=u.jobTitle||''; $('profPhoto').value=u.photoURL||''; } }
+    async function saveMyProfile(uid){ await setDoc(doc(db,'users',uid),{name:$('profName').value.trim(),jobTitle:$('profJob').value.trim(),photoURL:$('profPhoto').value.trim(),updatedAt:serverTimestamp()},{merge:true}); }
 
     function uidToInitials(uid){ const u=usersMap.get(uid); const src=(u?.name?.trim()||u?.email||'??').split('@')[0]; const parts=src.replace(/[^a-zA-Z0-9 ]/g,' ').trim().split(/\s+/); return (parts[0]||'?').charAt(0).toUpperCase()+(parts[1]||'').charAt(0).toUpperCase(); }
     function avatarEl(uid){ const u=usersMap.get(uid)||{}; const el=document.createElement('div'); el.className='avatar'; if(u.photoURL) el.innerHTML=`<img src="${u.photoURL}" alt="">`; else el.textContent=uidToInitials(uid); return el; }
     function deriveStatus(t){ const a=(t.assignees||[]).length, c=(t.completedBy||[]).length; if(a===0||c===0) return 'todo'; if(c<a) return 'in_progress'; return 'done'; }
-    function fillAssigneeSelect(sel){
-      sel.innerHTML='';
-      for (const [uid,u] of Array.from(usersMap.entries()).sort((a,b)=>(a[1].email||'').localeCompare(b[1].email||''))){
-        const o=document.createElement('option'); o.value=uid; const nm=u.name?.trim()||'(no name)'; o.textContent=`${nm}${u.email?' ('+u.email+')':''}`; sel.appendChild(o);
-      }
-    }
     function endOfMonth(year, month1to12){ return new Date(year, month1to12, 0); }
     function priorityFromDaysLeft(daysLeft){ if(daysLeft<=10) return 'urgent'; if(daysLeft<=20) return 'high'; return 'normal'; }
     function nameToUid(name){
@@ -356,8 +340,35 @@
       }
       return null;
     }
+    function fillAssigneeSelect(sel){
+      sel.innerHTML='';
+      for (const [uid,u] of Array.from(usersMap.entries()).sort((a,b)=>(a[1].email||'').localeCompare(b[1].email||''))){
+        const o=document.createElement('option'); o.value=uid; const nm=u.name?.trim()||'(no name)'; o.textContent=`${nm}${u.email?' ('+u.email+')':''}`; sel.appendChild(o);
+      }
+    }
 
-    /* ===== Live data ===== */
+    /* ---------- DOM refs ---------- */
+    const emailEl=$('email'), passEl=$('password'), btnSignIn=$('btnSignIn'), btnSignUp=$('btnSignUp');
+    const btnToggleFilters=$('btnToggleFilters'), filtersCard=$('filtersCard'), filtersBody=$('filtersBody');
+    const searchInput=$('searchInput'), statusFilter=$('statusFilter'), priorityFilter=$('priorityFilter'), scopeFilter=$('scopeFilter'), taskTbody=$('taskTbody');
+    const newTitle=$('newTitle'), newDesc=$('newDesc'), newPriority=$('newPriority'), newDue=$('newDue'), newAssignees=$('newAssignees'), btnCreate=$('btnCreate'), modHint=$('modHint');
+
+    // CSV (single)
+    const csvOne=$('csvOne'), btnParseSingleCsv=$('btnParseSingleCsv'), btnClearCsv=$('btnClearCsv');
+    const csvInfo=$('csvInfo'), csvPreview=$('csvPreview'), csvList=$('csvList'), btnCreateCsvTasks=$('btnCreateCsvTasks');
+    const impMonth=$('impMonth'), impYear=$('impYear');
+
+    // OCR
+    const sheetImage=$('sheetImage'), dropZone=$('dropZone');
+    const ocrStatus=$('ocrStatus'), sheetPreview=$('sheetPreview'), btnExtract=$('btnExtract'), btnClearPreview=$('btnClearPreview');
+    const previewList=$('previewList'), bulkActions=$('bulkActions'), btnCreateFromPreview=$('btnCreateFromPreview');
+
+    /* ---------- Filters / toggles ---------- */
+    btnToggleFilters.onclick=()=>{ filtersCard.classList.toggle('open'); btnToggleFilters.textContent=filtersCard.classList.contains('open')?'Hide':'Show'; };
+    [searchInput,statusFilter,priorityFilter].forEach(el=>{el.addEventListener('input',renderTasks);el.addEventListener('change',renderTasks);});
+    scopeFilter.addEventListener('change',()=>watchTasks());
+
+    /* ---------- Live data ---------- */
     async function watchUsers(){
       if (unsubUsers){unsubUsers();unsubUsers=null;}
       const qUsers=query(collection(db,'users'),orderBy('email'));
@@ -374,7 +385,7 @@
       unsubTasks=onSnapshot(qy,(snap)=>{ allTasks=snap.docs.map(d=>({id:d.id,...d.data()})); renderTasks(); });
     }
 
-    /* ===== Render ===== */
+    /* ---------- Render tasks ---------- */
     function applyFilters(items){
       const q=(searchInput.value||'').toLowerCase(), fStatus=statusFilter.value, fPrio=priorityFilter.value, scope=isMod?scopeFilter.value:'mine';
       let arr=items.slice();
@@ -464,8 +475,8 @@
       });
     }
 
-    /* ===== Create single task ===== */
-    btnCreate.onclick=async()=>{
+    /* ---------- Create single task ---------- */
+    $('btnCreate').onclick=async()=>{
       if(!isMod) return alert('Only moderators can create.');
       const title=newTitle.value.trim(); if(!title) return alert('Enter a title');
       const desc=newDesc.value.trim(); const prio=newPriority.value||'normal'; const due=newDue.value||null;
@@ -476,7 +487,7 @@
       toastMsg('Task created');
     };
 
-    /* ===== CSV (Single file) ===== */
+    /* ---------- CSV (single file) ---------- */
     function parseCsvRaw(file){ return new Promise((resolve,reject)=> Papa.parse(file,{header:false,skipEmptyLines:true,complete:res=>resolve(res.data),error:reject})); }
     function splitAreaFocus(areaCell){
       if(!areaCell) return {title:'', desc:''};
@@ -551,7 +562,7 @@
       csvPreview.classList.add('hidden'); csvList.innerHTML=''; csvInfo.textContent=''; csvOne.value='';
     };
 
-    /* ===== OCR (camera or gallery + drag&drop) ===== */
+    /* ---------- OCR (camera or gallery + drag&drop) ---------- */
     let ocrImageBlob = null;
     sheetImage.onchange = () => { const f = sheetImage.files?.[0]; if(!f) return; ocrImageBlob=f; sheetPreview.classList.remove('hidden'); ocrStatus.textContent=`Selected: ${f.name}`; previewList.innerHTML=''; bulkActions.classList.add('hidden'); };
     ;['dragenter','dragover'].forEach(evt=>dropZone.addEventListener(evt,e=>{e.preventDefault(); dropZone.classList.add('drag');}));
@@ -601,7 +612,7 @@
 
       ocrStatus.textContent = 'Reading image…'; previewList.innerHTML=''; bulkActions.classList.add('hidden');
       try{
-        const { data } = await window.Tesseract.recognize(ocrImageBlob, 'eng', { logger: m => { if (m.status) ocrStatus.textContent = `${m.status} ${m.progress?Math.round(m.progress*100)+'%':''}`; } });
+        const { data } = await Tesseract.recognize(ocrImageBlob, 'eng', { logger: m => { if (m.status) ocrStatus.textContent = `${m.status} ${m.progress?Math.round(m.progress*100)+'%':''}`; } });
         const tasks = parseOcrToTasks(data.text||'', y, m);
         if(!tasks.length){ ocrStatus.innerHTML = '<span class="danger">Could not parse tasks from photo. Try CSV for accuracy.</span>'; return; }
         ocrStatus.innerHTML = `<span class="ok">Parsed ${tasks.length} candidate task(s). Review below.</span>`;
@@ -615,7 +626,7 @@
           previewList.appendChild(row);
         });
         bulkActions.classList.remove('hidden');
-        $('btnCreateFromPreview').onclick = async ()=>{
+        btnCreateFromPreview.onclick = async ()=>{
           let created=0;
           const checks = previewList.querySelectorAll('.pv-check');
           for(const chk of checks){
@@ -631,16 +642,13 @@
       }catch(e){ console.error(e); ocrStatus.innerHTML = `<span class="danger">OCR failed: ${e.message}</span>`; }
     };
 
-    /* ===== Filters & profile ===== */
-    [searchInput,statusFilter,priorityFilter].forEach(el=>{el.addEventListener('input',renderTasks);el.addEventListener('change',renderTasks);});
-    btnToggleFilters.onclick=()=>{ filtersCard.classList.toggle('open'); btnToggleFilters.textContent=filtersCard.classList.contains('open')?'Hide':'Show'; };
-    scopeFilter.addEventListener('change',()=>watchTasks());
-    btnSaveProfile.onclick=async()=>{ if(!currentUser) return; try{ await saveMyProfile(currentUser.uid); toastMsg('Profile saved'); }catch(e){ alert('Error: '+e.message);} };
-    btnRefreshProfile.onclick=async()=>{ if(!currentUser) return; await loadMyProfile(currentUser.uid); };
+    /* ---------- Profile buttons ---------- */
+    $('btnSaveProfile').onclick=async()=>{ if(!currentUser) return; try{ await saveMyProfile(currentUser.uid); toastMsg('Profile saved'); }catch(e){ alert('Error: '+e.message);} };
+    $('btnRefreshProfile').onclick=async()=>{ if(!currentUser) return; await loadMyProfile(currentUser.uid); };
 
-    /* ===== Auth ===== */
-    btnSignIn.onclick=async()=>{ try{ await signInWithEmailAndPassword(auth,emailEl.value,passEl.value);}catch(e){ alert(e.message); } };
-    btnSignUp.onclick =async()=>{ try{ await createUserWithEmailAndPassword(auth,emailEl.value,passEl.value);}catch(e){ alert(e.message); } };
+    /* ---------- Auth ---------- */
+    $('btnSignIn').onclick=async()=>{ try{ await signInWithEmailAndPassword(auth,emailEl.value,passEl.value);}catch(e){ alert(e.message); } };
+    $('btnSignUp').onclick =async()=>{ try{ await createUserWithEmailAndPassword(auth,emailEl.value,passEl.value);}catch(e){ alert(e.message); } };
     btnSignOut.onclick=async()=>{ await signOut(auth); };
 
     async function startData(){ await watchUsers(); scopeFilter.classList.toggle('hidden', !isMod); scopeFilter.value='mine'; await watchTasks(); }
