@@ -8,42 +8,47 @@
     :root{
       --bg:#0e1116; --card:#151a24; --text:#eef2f7; --muted:#a3adbd; --border:#273045;
       --shadow:0 12px 40px rgba(0,0,0,.5); --brand:#5aa9ff; --btn:#1f6feb; --btn-text:#fff;
-      --pill:#1d2433; --danger:#ff6b6b; --tab:#0e1116; --tab-border:#1a2131; --vh:100svh;
+      --pill:#1d2433; --danger:#ff6b6b; --ok:#34d399; --tabbg:#0e1116; --tab-border:#1a2131; --vh:100svh;
     }
     @media (prefers-color-scheme: light){
-      :root{ --bg:#f6f7fb; --card:#fff; --text:#111; --muted:#667085; --border:#e6e8ef; --shadow:0 10px 30px rgba(0,0,0,.08); --tab:#fff; --tab-border:#e6e8ef; }
+      :root{ --bg:#f6f7fb; --card:#fff; --text:#111; --muted:#667085; --border:#e6e8ef; --shadow:0 10px 30px rgba(0,0,0,.08); --tabbg:#fff; --tab-border:#e6e8ef; }
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
 
-    /* Top bar */
-    .navTop{position:sticky;top:0;z-index:10;backdrop-filter:blur(6px);
+    /* Top bar (more compact) */
+    .navTop{position:sticky;top:0;z-index:20;backdrop-filter:blur(6px);
       background:linear-gradient(to bottom,color-mix(in srgb,var(--bg) 92%,transparent),transparent);
       border-bottom:1px solid var(--border)}
-    .navTopInner{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:700}
-    .logo{width:28px;height:28px;border-radius:8px;background:var(--brand);display:inline-block}
+    .navTopInner{max-width:1100px;margin:0 auto;padding:8px 14px;display:flex;align-items:center;gap:10px}
+    .brand{display:flex;align-items:center;gap:8px;font-weight:700}
+    .logo{width:22px;height:22px;border-radius:6px;background:var(--brand);display:inline-block}
+    .brandText{font-size:14px}
     .grow{flex:1}
-    .muted{color:var(--muted)}
+    .muted{color:var(--muted);font-size:12px}
+    .topBtn{font-size:14px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text)}
 
     /* App area */
-    .app{max-width:1100px;margin:0 auto;padding:16px;padding-bottom:112px;min-height:calc(var(--vh) - 56px)}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:16px;margin:14px 0}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    .row>*{flex:1;min-width:160px}
-    button,input,select,textarea{font-size:16px;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text)}
+    .app{max-width:1100px;margin:0 auto;padding:14px;padding-bottom:120px;min-height:calc(var(--vh) - 50px)}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:14px;margin:12px 0}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+    .row>*{flex:1;min-width:150px}
+    button,input,select,textarea{font-size:16px;padding:11px 12px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text)}
     button{background:var(--btn);color:var(--btn-text);border:none}
     button.secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
     textarea{min-height:84px}
 
-    /* Filters */
-    .filters{display:flex;gap:8px;padding:8px;border-radius:12px;margin-top:6px}
+    /* Filters (collapsible on phone) */
+    .filtersHeader{display:flex;align-items:center;justify-content:space-between}
+    .filtersBody{display:none; margin-top:8px}
+    .filters.open .filtersBody{display:block}
+    .filterChip{font-size:13px;padding:6px 10px;border-radius:999px;background:var(--pill);border:1px solid var(--border)}
 
     /* Table (desktop) */
     .tableWrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px}
     table{width:100%;border-collapse:collapse}
-    th,td{text-align:left;border-bottom:1px solid var(--border);padding:12px 10px;vertical-align:top}
+    th,td{text-align:left;border-bottom:1px solid var(--border);padding:10px 8px;vertical-align:top}
     th{font-size:12px;text-transform:uppercase;letter-spacing:.02em;color:var(--muted)}
     tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
 
@@ -66,31 +71,36 @@
       td{border:none;padding:10px 0}
       td[data-label]::before{content:attr(data-label) " ";font-size:12px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.02em}
       .tableWrap{border:none}
+      .brandText{display:none} /* hide long brand on small screens */
     }
 
-    /* Tabs */
-    .tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--tab);
-      border-top:1px solid var(--tab-border);padding:8px 10px;display:flex;gap:8px;justify-content:space-around;
-      padding-bottom:calc(8px + env(safe-area-inset-bottom))}
-    .tabBtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 10px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:12px}
+    /* Tabs (always sticky & safe-area aware) */
+    .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--tabbg);
+      border-top:1px solid var(--tab-border);padding:8px 10px  calc(8px + env(safe-area-inset-bottom));
+      display:flex;gap:10px;justify-content:space-around;box-shadow:0 -6px 20px rgba(0,0,0,.15)}
+    .tabBtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px;border-radius:12px;border:1px solid var(--border);
+      background:transparent;color:var(--text);font-size:12px}
     .tabBtn.active{background:color-mix(in srgb,var(--card) 85%, transparent)}
     .tabIcon{font-size:18px}
-    .hidden{display:none!important}
 
-    /* Toast + Debug */
-    .toast{position:fixed;bottom:74px;left:50%;transform:translateX(-50%);background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:10px 14px;z-index:50;display:none}
+    .toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:10px 14px;z-index:40;display:none}
     .toast.show{display:block}
-    #debug{position:fixed;bottom:120px;left:8px;right:8px;background:#000a;color:#fff;padding:8px;border-radius:8px;font:12px monospace;z-index:60;display:none;max-height:40vh;overflow:auto}
+    #debug{position:fixed;bottom:140px;left:8px;right:8px;background:#000a;color:#fff;padding:8px;border-radius:8px;font:12px monospace;z-index:50;display:none;max-height:40vh;overflow:auto}
+    .hidden{display:none!important}
+    .ok{color:var(--ok)} .danger{color:var(--danger)}
+    .hint{font-size:12px;color:var(--muted)}
+    .mini{font-size:12px}
+    .divider{height:1px;background:var(--border);margin:8px 0}
   </style>
 </head>
 <body>
   <!-- Top bar -->
   <div class="navTop">
     <div class="navTopInner">
-      <div class="brand"><span class="logo"></span> Work Tasks</div>
+      <div class="brand"><span class="logo"></span><span class="brandText">Work Tasks</span></div>
       <div id="authStatus" class="muted">Not signed in</div>
       <div class="grow"></div>
-      <button id="btnSignOut" class="secondary hidden">Sign out</button>
+      <button id="btnSignOut" class="topBtn hidden">Sign out</button>
     </div>
   </div>
 
@@ -107,28 +117,36 @@
           <button id="btnSignIn">Sign in</button>
           <button class="secondary" id="btnSignUp">Create account</button>
         </div>
-        <p class="muted">New users will be created automatically. Ask an admin to mark you as a moderator if needed.</p>
+        <p class="hint">New users will be created automatically. Ask an admin to mark you as a moderator if needed.</p>
       </div>
     </section>
 
     <section id="page-tasks" class="page hidden">
-      <div class="filters card">
-        <input id="searchInput" placeholder="Search title…" />
-        <select id="statusFilter">
-          <option value="all">Status: All</option>
-          <option value="open">Status: Open</option>
-          <option value="done">Status: Done</option>
-        </select>
-        <select id="priorityFilter">
-          <option value="all">Priority: All</option>
-          <option value="normal">Priority: Normal</option>
-          <option value="high">Priority: High</option>
-          <option value="urgent">Priority: Urgent</option>
-        </select>
-        <select id="scopeFilter" class="hidden">
-          <option value="mine">Show: Mine</option>
-          <option value="all">Show: All</option>
-        </select>
+      <div class="card filters" id="filtersCard">
+        <div class="filtersHeader">
+          <strong>Filters</strong>
+          <button id="btnToggleFilters" class="secondary mini">Show</button>
+        </div>
+        <div class="filtersBody" id="filtersBody">
+          <div class="row">
+            <input id="searchInput" placeholder="Search title…" />
+            <select id="statusFilter">
+              <option value="all">Status: All</option>
+              <option value="open">Status: Open</option>
+              <option value="done">Status: Done</option>
+            </select>
+            <select id="priorityFilter">
+              <option value="all">Priority: All</option>
+              <option value="normal">Priority: Normal</option>
+              <option value="high">Priority: High</option>
+              <option value="urgent">Priority: Urgent</option>
+            </select>
+            <select id="scopeFilter" class="hidden">
+              <option value="mine">Show: Mine</option>
+              <option value="all">Show: All</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <div class="card tableWrap">
@@ -156,9 +174,31 @@
           </select>
           <input id="newDue" type="date" />
         </div>
-        <div class="row"><select id="newAssignees" multiple><option value="">Pick assignees…</option></select></div>
+        <div class="row">
+          <select id="newAssignees" multiple><option value="">Pick assignees…</option></select>
+        </div>
         <div class="row"><button id="btnCreate">Create task</button></div>
-        <p id="modHint" class="muted hidden">Only moderators can create tasks.</p>
+        <p id="modHint" class="hint hidden danger">Only moderators can create tasks.</p>
+      </div>
+
+      <div class="card">
+        <h3>Scan Sheet (Beta) — Auto-create tasks</h3>
+        <p class="hint">Photo or upload a simple sheet with columns like: <strong>Title, Priority, Due, Assignees</strong>. Assignees can be names or emails (comma/semicolon separated).</p>
+        <div class="row">
+          <input id="sheetImage" type="file" accept="image/*" capture="environment" />
+        </div>
+        <div id="ocrStatus" class="hint"></div>
+        <div id="sheetPreview" class="hidden">
+          <div class="divider"></div>
+          <div class="row">
+            <button id="btnExtract" class="secondary">Extract text</button>
+            <button id="btnClearPreview" class="secondary">Clear</button>
+          </div>
+          <div id="previewList" class="mini" style="margin-top:8px"></div>
+          <div class="row hidden" id="bulkActions">
+            <button id="btnCreateFromPreview">Create selected tasks</button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -178,15 +218,18 @@
     </section>
   </div>
 
-  <!-- Tabs -->
+  <!-- Bottom tabs (sticky) -->
   <div class="tabs hidden" id="tabs">
     <button class="tabBtn" data-route="#/tasks"><span class="tabIcon">🗂️</span><span>Tasks</span></button>
-    <button class="tabBtn" data-route="#/create"><span class="tabIcon">➕</span><span>Create</span></button>
+    <button class="tabBtn" data-route="#/create"><span class="tabIcon">📷</span><span>Create</span></button>
     <button class="tabBtn" data-route="#/profile"><span class="tabIcon">👤</span><span>Profile</span></button>
   </div>
 
   <div id="toast" class="toast">Saved</div>
   <div id="debug"></div>
+
+  <!-- Tesseract (on-device OCR for the Scan Sheet feature) -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
 
   <script type="module">
     /* ================= Firebase ================= */
@@ -234,7 +277,6 @@
     document.querySelectorAll('.tabBtn').forEach(b=> b.onclick = ()=> go(b.dataset.route));
 
     function toastMsg(msg='Saved'){ toast.textContent=msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1200); }
-    // tiny debug overlay (add ?debug to URL to show logs)
     const isDebug = location.search.includes('debug');
     function dlog(msg){ if(!isDebug) return; debugBox.style.display='block'; debugBox.textContent += msg + '\n'; }
 
@@ -250,12 +292,25 @@
     /* ================= DOM refs ================= */
     const emailEl=$('email'), passEl=$('password'), btnSignIn=$('btnSignIn'), btnSignUp=$('btnSignUp');
 
+    // Filters (collapsible)
+    const filtersCard = $('filtersCard'), btnToggleFilters = $('btnToggleFilters'), filtersBody = $('filtersBody');
     const searchInput=$('searchInput'), statusFilter=$('statusFilter'), priorityFilter=$('priorityFilter'), scopeFilter=$('scopeFilter');
+    btnToggleFilters.onclick = () => {
+      filtersCard.classList.toggle('open');
+      btnToggleFilters.textContent = filtersCard.classList.contains('open') ? 'Hide' : 'Show';
+    };
+
     const taskTbody=$('taskTbody');
 
+    // Create
     const newTitle=$('newTitle'), newDesc=$('newDesc'), newPriority=$('newPriority'), newDue=$('newDue'), newAssignees=$('newAssignees'), btnCreate=$('btnCreate'), modHint=$('modHint');
 
+    // Profile
     const profName=$('profName'), profJob=$('profJob'), profPhoto=$('profPhoto'), btnSaveProfile=$('btnSaveProfile'), btnRefreshProfile=$('btnRefreshProfile');
+
+    // Scan Sheet
+    const sheetImage = $('sheetImage'), sheetPreview = $('sheetPreview'), ocrStatus = $('ocrStatus');
+    const btnExtract = $('btnExtract'), btnClearPreview = $('btnClearPreview'), previewList = $('previewList'), bulkActions = $('bulkActions');
 
     /* ================= Helpers ================= */
     async function ensureUserProfile(user){
@@ -324,6 +379,7 @@
     }
 
     function renderTasks(){
+      const taskTbody=$('taskTbody');
       const rows=applyFilters(allTasks);
       taskTbody.innerHTML='';
       rows.forEach(row=>{
@@ -440,15 +496,174 @@
     /* ================= Filters & profile buttons ================= */
     [searchInput,statusFilter,priorityFilter].forEach(el=>{ el.addEventListener('input',renderTasks); el.addEventListener('change',renderTasks); });
     scopeFilter.addEventListener('change',()=>watchTasks());
-    $('btnSaveProfile').onclick=async()=>{ if(!currentUser) return; try{ await saveMyProfile(currentUser.uid); toastMsg('Profile saved'); }catch(e){ alert('Error: '+e.message);} };
-    $('btnRefreshProfile').onclick=async()=>{ if(!currentUser) return; await loadMyProfile(currentUser.uid); };
+    btnSaveProfile.onclick=async()=>{ if(!currentUser) return; try{ await saveMyProfile(currentUser.uid); toastMsg('Profile saved'); }catch(e){ alert('Error: '+e.message);} };
+    btnRefreshProfile.onclick=async()=>{ if(!currentUser) return; await loadMyProfile(currentUser.uid); };
 
-    /* ================= Auth actions ================= */
-    $('btnSignIn').onclick=async()=>{ try{ await signInWithEmailAndPassword(auth, emailEl.value, passEl.value); }catch(e){ alert(e.message); dlog('signin:'+e.message); } };
-    $('btnSignUp').onclick =async()=>{ try{ await createUserWithEmailAndPassword(auth, emailEl.value, passEl.value); }catch(e){ alert(e.message); dlog('signup:'+e.message); } };
-    $('btnSignOut').onclick=async()=>{ await signOut(auth); };
+    /* ================= OCR: Scan Sheet (moderators) ================= */
+    let ocrImageBlob = null;
+    sheetImage.onchange = () => {
+      const f = sheetImage.files?.[0];
+      if (!f) return;
+      ocrImageBlob = f;
+      show(sheetPreview);
+      ocrStatus.textContent = `Selected: ${f.name} (${Math.round(f.size/1024)} KB)`;
+      previewList.innerHTML = '';
+      hide(bulkActions);
+    };
+    btnClearPreview.onclick = () => {
+      sheetImage.value = '';
+      ocrImageBlob = null;
+      sheetPreview.classList.add('hidden');
+      ocrStatus.textContent = '';
+      previewList.innerHTML = '';
+      hide(bulkActions);
+    };
 
-    /* ================= Users/Tasks watchers ================= */
+    function parseTasksFromText(txt){
+      // Normalize
+      const lines = txt.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+      const out = [];
+      for (let raw of lines){
+        // Skip header-ish lines
+        const low = raw.toLowerCase();
+        if (/(title|task).*(priority|prio)|priority|assignee|due/.test(low)) continue;
+
+        // Try CSV / TSV splits
+        let parts = raw.split(/,|\t|\s{2,}\|?\s{0,}/).map(s=>s.trim()).filter(Boolean);
+        if (parts.length < 1) continue;
+
+        // Heuristics: search for priority & due
+        let title='', desc='', priority='normal', due='', assigneesText='';
+        // If looks like: Title | Priority | Due | Assignees
+        if (parts.length >= 3){
+          title = parts[0];
+          // find priority token
+          const prIdx = parts.findIndex(p=>/^(urgent|high|normal)$/i.test(p));
+          if (prIdx>=0){ priority = parts[prIdx].toLowerCase(); parts.splice(prIdx,1); }
+          // find date-ish token
+          const dateIdx = parts.findIndex(p=>/^\d{4}-\d{2}-\d{2}$|^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}$/.test(p));
+          if (dateIdx>=0){ due = parts[dateIdx]; parts.splice(dateIdx,1); }
+          // Remainder as assignee text
+          if (parts.length>1) assigneesText = parts.slice(1).join(' ');
+        } else {
+          title = parts.join(' ');
+        }
+
+        // Normalize due to YYYY-MM-DD if possible
+        if (due && !/^\d{4}-\d{2}-\d{2}$/.test(due)){
+          const mmdd = due.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+          if (mmdd){
+            let [_, m,d,y] = mmdd; y = (y.length===2?('20'+y):y);
+            const mm = String(m).padStart(2,'0'), dd = String(d).padStart(2,'0');
+            due = `${y}-${mm}-${dd}`;
+          }
+        }
+
+        // Assignees split by ; or , 
+        let assigneeTokens = assigneesText.split(/[;,]/).map(s=>s.trim()).filter(Boolean);
+        out.push({ title: title || '(no title)', description: desc, priority, dueDate: due || '', assigneeTokens });
+      }
+      return out;
+    }
+
+    function mapAssignees(tokens){
+      // Map names/emails to user UIDs using usersMap
+      const byEmail = new Map(Array.from(usersMap.entries()).map(([uid,u])=>[(u.email||'').toLowerCase(), uid]));
+      const byName  = new Map(Array.from(usersMap.entries()).map(([uid,u])=>[(u.name||'').toLowerCase(), uid]));
+      const uids = [];
+      const unresolved = [];
+      for (const t of tokens){
+        const key = t.toLowerCase();
+        if (byEmail.has(key)) { uids.push(byEmail.get(key)); continue; }
+        if (byName.has(key))  { uids.push(byName.get(key)); continue; }
+        // try partial match on name
+        let matched = null;
+        for (const [uid,u] of usersMap.entries()){
+          if ((u.name||'').toLowerCase().includes(key)) { matched = uid; break; }
+        }
+        if (matched) uids.push(matched); else unresolved.push(t);
+      }
+      return { uids: Array.from(new Set(uids)), unresolved };
+    }
+
+    btnExtract.onclick = async () => {
+      if (!isMod) return alert('Only moderators can use Scan Sheet.');
+      if (!ocrImageBlob) return alert('Choose a photo first.');
+      const T = window.Tesseract;
+      if (!T) return alert('OCR library not loaded yet. Try again in a second.');
+
+      ocrStatus.innerHTML = 'Reading image…';
+      previewList.innerHTML = '';
+      hide(bulkActions);
+
+      try{
+        const { data } = await T.recognize(ocrImageBlob, 'eng', { logger: m => { if (m.status) ocrStatus.textContent = `${m.status} ${m.progress?Math.round(m.progress*100)+'%':''}`; } });
+        const rows = parseTasksFromText(data.text || '');
+        if (!rows.length){ ocrStatus.innerHTML = '<span class="danger">No rows found. Make sure your sheet has clear text.</span>'; return; }
+        ocrStatus.innerHTML = `<span class="ok">Parsed ${rows.length} line(s). Review and select which to create.</span>`;
+
+        // Build preview list with checkboxes + editable fields
+        previewList.innerHTML = '';
+        rows.forEach((r, i) => {
+          const assMap = mapAssignees(r.assigneeTokens||[]);
+          const li = document.createElement('div');
+          li.className = 'card';
+          li.innerHTML = `
+            <label class="mini"><input type="checkbox" class="pv-check" data-i="${i}" checked> Create this task</label>
+            <div class="row" style="margin-top:6px">
+              <input class="pv-title" data-i="${i}" value="${r.title.replace(/"/g,'&quot;')}" />
+              <select class="pv-priority" data-i="${i}">
+                <option value="normal"${(r.priority||'normal')==='normal'?' selected':''}>Normal</option>
+                <option value="high"${r.priority==='high'?' selected':''}>High</option>
+                <option value="urgent"${r.priority==='urgent'?' selected':''}>Urgent</option>
+              </select>
+              <input class="pv-due" data-i="${i}" type="date" value="${r.dueDate||''}" />
+            </div>
+            <div class="row">
+              <input class="pv-assignees" data-i="${i}" placeholder="Assignees (names or emails, comma-separated)" value="${(r.assigneeTokens||[]).join(', ')}" />
+            </div>
+            <div class="hint">${assMap.unresolved.length ? `Unmatched: ${assMap.unresolved.join(', ')}` : 'All assignees matched'} </div>
+          `;
+          previewList.appendChild(li);
+        });
+        show(bulkActions);
+      }catch(e){
+        console.error(e); ocrStatus.innerHTML = `<span class="danger">OCR failed: ${e.message}</span>`;
+      }
+    };
+
+    $('btnCreateFromPreview').onclick = async () => {
+      if (!isMod) return alert('Only moderators can create.');
+      const cards = previewList.querySelectorAll('.card');
+      let created = 0;
+      for (const card of cards){
+        const chk = card.querySelector('.pv-check');
+        if (!chk.checked) continue;
+        const i = chk.getAttribute('data-i');
+        const title = card.querySelector('.pv-title').value.trim() || '(no title)';
+        const priority = card.querySelector('.pv-priority').value || 'normal';
+        const dueDate = card.querySelector('.pv-due').value || '';
+        const assText = card.querySelector('.pv-assignees').value || '';
+        const tokens = assText.split(/[;,]/).map(s=>s.trim()).filter(Boolean);
+        const { uids } = mapAssignees(tokens);
+        const assignees = uids.length ? uids : [currentUser.uid];
+
+        await addDoc(collection(db,'tasks'),{
+          title, description:'', priority, dueDate, assignees, completedBy:[],
+          createdBy: currentUser.uid, createdAt: serverTimestamp(), updatedAt: serverTimestamp()
+        });
+        created++;
+      }
+      toastMsg(`Created ${created} task(s)`);
+      // reset
+      previewList.innerHTML = ''; hide(bulkActions); sheetImage.value=''; ocrImageBlob=null; sheetPreview.classList.add('hidden'); ocrStatus.textContent='';
+    };
+
+    /* ================= Auth + users/tasks ================= */
+    btnSignIn.onclick=async()=>{ try{ await signInWithEmailAndPassword(auth, emailEl.value, passEl.value); }catch(e){ alert(e.message); dlog('signin:'+e.message);} };
+    btnSignUp.onclick =async()=>{ try{ await createUserWithEmailAndPassword(auth, emailEl.value, passEl.value); }catch(e){ alert(e.message); dlog('signup:'+e.message);} };
+    btnSignOut.onclick=async()=>{ await signOut(auth); };
+
     async function startData(){
       await watchUsers();
       scopeFilter.classList.toggle('hidden', !isMod);
@@ -456,15 +671,11 @@
       await watchTasks();
     }
 
-    /* ================= Router ================= */
-    function bootRouter(){ onHash(); }
-
-    /* ================= Auth listener ================= */
     onAuthStateChanged(auth, async (user)=>{
       currentUser=user||null;
       if(user){
         show(btnSignOut);
-        authStatus.textContent=`Signed in as ${user.email}`;
+        authStatus.textContent=`Signed in`;
         await ensureUserProfile(user);
         await loadMyProfile(user.uid);
         isMod = await isModerator(user.uid);
@@ -481,14 +692,8 @@
       }
     });
 
-    // boot
-    bootRouter();
-
-    // surface unexpected errors if ?debug is on
-    if (isDebug){
-      addEventListener('error', e => dlog('error: '+(e.message||e)));
-      addEventListener('unhandledrejection', e => dlog('promise: '+(e.reason?.message||e.reason)));
-    }
+    // boot router
+    window.addEventListener('load', ()=> go(location.hash || '#/auth'));
   </script>
 </body>
 </html>
