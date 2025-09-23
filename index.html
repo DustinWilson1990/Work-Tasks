@@ -17,7 +17,7 @@
     html,body{height:100%}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
 
-    /* Top bar (compact) */
+    /* Top bar */
     .navTop{position:sticky;top:0;z-index:20;backdrop-filter:blur(6px);
       background:linear-gradient(to bottom,color-mix(in srgb,var(--bg) 92%,transparent),transparent);
       border-bottom:1px solid var(--border)}
@@ -38,11 +38,6 @@
     button{background:var(--btn);color:var(--btn-text);border:none}
     button.secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
     textarea{min-height:84px}
-
-    /* Filters */
-    .filtersHeader{display:flex;align-items:center;justify-content:space-between}
-    .filtersBody{display:none; margin-top:8px}
-    .filters.open .filtersBody{display:block}
     .hint{font-size:12px;color:var(--muted)}
     .mini{font-size:12px}
     .divider{height:1px;background:var(--border);margin:8px 0}
@@ -179,24 +174,19 @@
         <p id="modHint" class="hint hidden danger">Only moderators can create tasks.</p>
       </div>
 
-      <!-- NEW: Spreadsheet importer -->
+      <!-- NEW: Single-CSV importer (fixed layout) -->
       <div class="card">
-        <h3>Import from Spreadsheet (CSV) — Recommended</h3>
-        <p class="hint">Upload 2 CSVs: <strong>Schedule</strong> (Name, Count, 1..31 with Ref codes) and <strong>Task Library</strong> (Ref, Area, Focus). Then pick Month+Year and create tasks.</p>
+        <h3>Import from Spreadsheet (Single CSV)</h3>
+        <p class="hint">Export the whole sheet as CSV. Layout expected: A=Name, B=Count(ignored), C…AG=Days 1..31 (Ref numbers), AH=Area, AI=Ref, AJ=Goal(ignored), AK=Count(ignored).</p>
         <div class="row">
-          <select id="impMonth">
-            <option value="">Month…</option>
-          </select>
-          <select id="impYear">
-            <option value="">Year…</option>
-          </select>
+          <select id="impMonth"><option value="">Month…</option></select>
+          <select id="impYear"><option value="">Year…</option></select>
         </div>
         <div class="row">
-          <input id="csvSchedule" type="file" accept=".csv" />
-          <input id="csvLibrary"  type="file" accept=".csv" />
+          <input id="csvOne" type="file" accept=".csv" />
         </div>
         <div class="row">
-          <button id="btnParseCsv" class="secondary">Preview tasks</button>
+          <button id="btnParseSingleCsv" class="secondary">Preview tasks</button>
           <button id="btnClearCsv" class="secondary">Clear</button>
         </div>
         <div id="csvInfo" class="hint"></div>
@@ -209,10 +199,10 @@
         </div>
       </div>
 
-      <!-- OCR fallback (kept) -->
+      <!-- OCR fallback (improved zones) -->
       <div class="card">
-        <h3>Scan Sheet (Beta) — Camera OCR</h3>
-        <p class="hint">Less accurate. CSV is preferred.</p>
+        <h3>Scan Sheet (Beta) — Photo</h3>
+        <p class="hint">Works from a phone photo. CSV is still more accurate. Try to keep the sheet flat and well-lit.</p>
         <div class="row"><input id="sheetImage" type="file" accept="image/*" capture="environment" /></div>
         <div id="ocrStatus" class="hint"></div>
         <div id="sheetPreview" class="hidden">
@@ -316,11 +306,15 @@
     const profName=$('profName'), profJob=$('profJob'), profPhoto=$('profPhoto'), btnSaveProfile=$('btnSaveProfile'), btnRefreshProfile=$('btnRefreshProfile');
 
     // Importer refs
-    const csvSchedule=$('csvSchedule'), csvLibrary=$('csvLibrary'), btnParseCsv=$('btnParseCsv'), btnClearCsv=$('btnClearCsv');
+    const csvOne=$('csvOne'), btnParseSingleCsv=$('btnParseSingleCsv'), btnClearCsv=$('btnClearCsv');
     const csvInfo=$('csvInfo'), csvPreview=$('csvPreview'), csvList=$('csvList'), btnCreateCsvTasks=$('btnCreateCsvTasks');
     const impMonth=$('impMonth'), impYear=$('impYear');
 
-    // Populate month/year selects
+    // OCR refs
+    const sheetImage=$('sheetImage'), sheetPreview=$('sheetPreview'), ocrStatus=$('ocrStatus');
+    const btnExtract=$('btnExtract'), btnClearPreview=$('btnClearPreview'), previewList=$('previewList'), bulkActions=$('bulkActions');
+
+    // Month/year options
     (function initMonthYear(){
       const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       months.forEach((m,i)=>{ const o=document.createElement('option'); o.value=(i+1); o.textContent=m; impMonth.appendChild(o); });
@@ -346,7 +340,7 @@
         const o=document.createElement('option'); o.value=uid; const nm=u.name?.trim()||'(no name)'; o.textContent=`${nm}${u.email?' ('+u.email+')':''}`; sel.appendChild(o);
       }
     }
-    function endOfMonth(year, month1to12){ return new Date(year, month1to12, 0); } // pass (year, month) -> returns Date (last day)
+    function endOfMonth(year, month1to12){ return new Date(year, month1to12, 0); } // (year, month) -> last day Date
     function priorityFromDaysLeft(daysLeft){ if(daysLeft<=10) return 'urgent'; if(daysLeft<=20) return 'high'; return 'normal'; }
 
     /* ===== Live data ===== */
@@ -413,7 +407,7 @@
         if(!isMod){ bEdit.disabled=true; bAssign.disabled=true; }
         tdAct.appendChild(bEdit); tdAct.appendChild(bAssign);
 
-        // Inline editor (same as before)
+        // Inline editor
         const trEdit=document.createElement('tr'); const tdEdit=document.createElement('td'); tdEdit.colSpan=7; trEdit.appendChild(tdEdit); trEdit.className='hidden';
         const panel=document.createElement('div'); panel.className='card';
         panel.innerHTML=`
@@ -469,61 +463,100 @@
       toastMsg('Task created');
     };
 
-    /* ===== CSV Importer ===== */
-    btnClearCsv.onclick=()=>{ csvSchedule.value=''; csvLibrary.value=''; csvList.innerHTML=''; csvPreview.classList.add('hidden'); csvInfo.textContent=''; };
-    function parseCsvFile(file){ return new Promise((resolve,reject)=> Papa.parse(file,{header:true,skipEmptyLines:true,complete:res=>resolve(res.data),error:reject})); }
+    /* ===== Name → UID match ===== */
     function nameToUid(name){
-      const target=(name||'').toLowerCase().trim();
+      const target=(name||'').toLowerCase().trim().replace(/\s+\(.*?\)/,''); // strip e.g. (Sup.)
       for(const [uid,u] of usersMap.entries()){
-        const nm=(u.name||'').toLowerCase();
+        const nm=(u.name||'').toLowerCase().trim();
+        if(!nm) continue;
         if(nm===target) return uid;
-        if(nm.includes(target) || target.includes(nm)) return uid; // partial
+        if(nm.includes(target) || target.includes(nm)) return uid; // partial match
       }
       return null;
     }
-    function buildTasksFromCsv(scheduleRows, libRows, year, month){
-      // Build ref -> {title, desc}
-      const lib=new Map();
-      libRows.forEach(r=>{
-        const ref=String(r.Ref||r.ref||'').trim();
-        const area=(r.Area||r.area||'').toString().trim();
-        const focus=(r.Focus||r.focus||'').toString().trim();
-        if(ref) lib.set(ref,{title:area||`Ref ${ref}`, desc: focus?`Focus: ${focus}`:''});
-      });
-      const last=endOfMonth(year, month); const endStr=last.toISOString().slice(0,10);
+
+    /* ===== CSV (Single file) ===== */
+    btnClearCsv.onclick=()=>{ csvOne.value=''; csvList.innerHTML=''; csvPreview.classList.add('hidden'); csvInfo.textContent=''; };
+
+    function parseCsvRaw(file){
+      return new Promise((resolve,reject)=> Papa.parse(file,{header:false,skipEmptyLines:true,complete:res=>resolve(res.data),error:reject}));
+    }
+
+    function splitAreaFocus(areaCell){
+      if(!areaCell) return {title:'', desc:''};
+      let s=String(areaCell).trim();
+      // try to split "Title – focus on X" / "Title - focus on X"
+      let title=s, desc='';
+      const focusMatch = s.match(/^(.*?)[–-]\s*focus on\s*(.*)$/i);
+      if(focusMatch){ title=focusMatch[1].trim(); desc='Focus: '+focusMatch[2].trim(); }
+      else{
+        // fallback: split on dash
+        const dash = s.split(/–|-/);
+        if(dash.length>1){ title=dash[0].trim(); desc=dash.slice(1).join('-').trim(); }
+      }
+      return {title, desc};
+    }
+
+    function buildTasksFromSingleCsv(rows, year, month){
+      // column indices (0-based)
+      const COL_NAME=0;
+      const COL_COUNT=1; // ignored
+      const COL_DAY_START=2; // C = day 1
+      const COL_DAY_END=32;  // AG = day 31
+      const COL_AREA=33;     // AH
+      const COL_REF=34;      // AI
+      // AJ (35), AK (36) ignored
+
+      // Build library: scan all rows where Area+Ref present
+      const lib = new Map();
+      for(const r of rows){
+        const area=r[COL_AREA], ref=r[COL_REF];
+        if(area && ref){
+          const {title, desc} = splitAreaFocus(area);
+          lib.set(String(ref).trim(), {title: title || `Ref ${ref}`, desc});
+        }
+      }
+
+      const last=endOfMonth(year, month); const dueStr=last.toISOString().slice(0,10);
       const today=new Date(); const daysLeft=Math.ceil((last - new Date(today.getFullYear(), today.getMonth(), today.getDate()))/86400000);
       const basePriority=priorityFromDaysLeft(daysLeft);
 
       const tasks=[];
-      scheduleRows.forEach(row=>{
-        const rawName=row.Name||row.name||row.NAME; if(!rawName) return;
-        const assigneeUid=nameToUid(String(rawName).replace(/\s+\(.*?\)/,'').trim()); // strip (Sup.) etc
-        // Loop over day columns 1..31
-        for(let d=1; d<=31; d++){
-          const val=row[String(d)] ?? row[''+d]; if(!val) continue;
-          const ref=String(val).trim(); if(!lib.has(ref)) continue;
-          const {title,desc}=lib.get(ref);
+      for(const r of rows){
+        const name=r[COL_NAME]; if(!name) continue;
+        // consider as schedule row if there is any value in day cells
+        let hasAny=false;
+        for(let c=COL_DAY_START;c<=COL_DAY_END;c++){ if(r[c]){hasAny=true;break;} }
+        if(!hasAny) continue;
+
+        const assUid = nameToUid(String(name));
+        for(let day=1; day<=31; day++){
+          const col = COL_DAY_START + (day-1);
+          const v = r[col];
+          if(!v) continue;
+          const ref = String(v).trim();
+          if(!lib.has(ref)) continue;
+          const {title, desc} = lib.get(ref);
           tasks.push({
-            title, description:desc, dueDate:endStr, priority:basePriority,
-            scheduledDay: d, ref, assignees: assigneeUid ? [assigneeUid] : [], unresolvedAssignee: assigneeUid? null : String(rawName).trim()
+            title, description:desc, dueDate:dueStr, priority:basePriority,
+            scheduledDay: day, ref, assignees: assUid ? [assUid] : [], unresolvedAssignee: assUid? null : String(name).trim()
           });
         }
-      });
+      }
       return tasks;
     }
 
-    btnParseCsv.onclick=async()=>{
+    btnParseSingleCsv.onclick=async()=>{
       if(!isMod) return alert('Only moderators can import.');
       const m=parseInt(impMonth.value,10), y=parseInt(impYear.value,10);
       if(!m||!y) return alert('Pick Month and Year');
-      const f1=csvSchedule.files?.[0], f2=csvLibrary.files?.[0];
-      if(!f1||!f2) return alert('Select both CSV files');
+      const f=csvOne.files?.[0]; if(!f) return alert('Select the CSV file');
 
       try{
         csvInfo.textContent='Parsing…';
-        const [sched, lib] = await Promise.all([parseCsvFile(f1), parseCsvFile(f2)]);
-        const tasks = buildTasksFromCsv(sched, lib, y, m);
-        if(!tasks.length){ csvInfo.innerHTML='<span class="danger">No tasks found. Check your CSV headers.</span>'; return; }
+        const rows = await parseCsvRaw(f); // array of arrays
+        const tasks = buildTasksFromSingleCsv(rows, y, m);
+        if(!tasks.length){ csvInfo.innerHTML='<span class="danger">No tasks found. Check CSV layout.</span>'; return; }
         csvInfo.innerHTML = `<span class="ok">Previewing ${tasks.length} task(s). Due: last day of ${m}/${y}. Priority auto-set by days left.</span>`;
         // Render preview
         csvList.innerHTML='';
@@ -538,7 +571,6 @@
           csvList.appendChild(row);
         });
         csvPreview.classList.remove('hidden');
-        // store for Create
         btnCreateCsvTasks.dataset.payload = JSON.stringify(tasks);
       }catch(e){
         csvInfo.innerHTML=`<span class="danger">Parse failed: ${e.message}</span>`;
@@ -562,19 +594,125 @@
         }catch{ skipped++; }
       }
       toastMsg(`Created ${created} task(s)` + (skipped?`, skipped ${skipped}`:''));
-      // reset preview
-      csvPreview.classList.add('hidden'); csvList.innerHTML=''; csvInfo.textContent='';
-      csvSchedule.value=''; csvLibrary.value='';
+      csvPreview.classList.add('hidden'); csvList.innerHTML=''; csvInfo.textContent=''; csvOne.value='';
     };
 
-    /* ===== OCR fallback (unchanged from before, trimmed here) ===== */
-    // (kept minimal to focus on CSV; you can still use Scan Sheet if needed)
-    const sheetImage=$('sheetImage'), sheetPreview=$('sheetPreview'), ocrStatus=$('ocrStatus');
-    const btnExtract=$('btnExtract'), btnClearPreview=$('btnClearPreview'), previewList=$('previewList'), bulkActions=$('bulkActions');
-    let ocrImageBlob=null;
-    sheetImage.onchange=()=>{ const f=sheetImage.files?.[0]; if(!f) return; ocrImageBlob=f; sheetPreview.classList.remove('hidden'); ocrStatus.textContent=`Selected: ${f.name}`; previewList.innerHTML=''; bulkActions.classList.add('hidden'); };
-    btnClearPreview.onclick=()=>{ sheetImage.value=''; ocrImageBlob=null; sheetPreview.classList.add('hidden'); ocrStatus.textContent=''; previewList.innerHTML=''; bulkActions.classList.add('hidden'); };
-    btnExtract.onclick=()=> alert('For accuracy, use the CSV importer above. (OCR kept for emergencies.)');
+    /* ===== OCR (beta, fixed zones) ===== */
+    let ocrImageBlob = null;
+    sheetImage.onchange = () => {
+      const f = sheetImage.files?.[0];
+      if (!f) return;
+      ocrImageBlob = f;
+      sheetPreview.classList.remove('hidden');
+      ocrStatus.textContent = `Selected: ${f.name}`;
+      previewList.innerHTML = '';
+      bulkActions.classList.add('hidden');
+    };
+    btnClearPreview.onclick = () => {
+      sheetImage.value = '';
+      ocrImageBlob = null;
+      sheetPreview.classList.add('hidden');
+      ocrStatus.textContent = '';
+      previewList.innerHTML = '';
+      bulkActions.classList.add('hidden');
+    };
+
+    function parseOcrToTasks(rawText, year, month){
+      // Super-simple fixed-layout parser:
+      // 1) Build library from lines containing "Ref <num>" on the right block.
+      // 2) For names (leftmost), look for alphabetic words at start of line, then subsequent numbers in that line = refs by day order.
+      // NOTE: This is still a beta fallback — CSV is recommended.
+      const lines = rawText.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+      const lib = new Map();
+      for(const ln of lines){
+        const m = ln.match(/^(.*?)(?:\s*[–-]\s*focus on\s*(.*?))?\s+ref[:\s]*([0-9]+)\b/i);
+        if(m){
+          const area=m[1].trim(); const focus=m[2]?.trim();
+          const ref=String(m[3]).trim();
+          const {title, desc} = splitAreaFocus(focus ? `${area} – focus on ${focus}` : area);
+          lib.set(ref,{title,desc});
+        }
+      }
+      const last=endOfMonth(year, month); const dueStr=last.toISOString().slice(0,10);
+      const today=new Date(); const daysLeft=Math.ceil((last - new Date(today.getFullYear(), today.getMonth(), today.getDate()))/86400000);
+      const basePriority=priorityFromDaysLeft(daysLeft);
+
+      const tasks=[];
+      for(const ln of lines){
+        // rough name + refs per line: "Tim  . .  7  .  .  9"
+        const nameMatch = ln.match(/^([A-Za-z][A-Za-z .()'-]+)\s+(.*)$/);
+        if(!nameMatch) continue;
+        const name = nameMatch[1].trim();
+        const rest = nameMatch[2];
+        const refs = rest.match(/\b([0-9]{1,2})\b/g) || [];
+        if(refs.length===0) continue;
+
+        const assUid = nameToUid(name);
+        refs.forEach((ref, idx)=>{
+          if(!lib.has(ref)) return;
+          const {title, desc}=lib.get(ref);
+          tasks.push({
+            title, description:desc, dueDate:dueStr, priority:basePriority,
+            scheduledDay: idx+1, ref, assignees: assUid ? [assUid] : [], unresolvedAssignee: assUid? null : name
+          });
+        });
+      }
+      return tasks;
+    }
+
+    btnExtract.onclick = async () => {
+      if (!isMod) return alert('Only moderators can use Scan Sheet.');
+      if (!ocrImageBlob) return alert('Choose a photo first.');
+      const m=parseInt(impMonth.value,10), y=parseInt(impYear.value,10);
+      if(!m||!y) return alert('Pick Month and Year (used for due date)');
+      const T = window.Tesseract;
+      if (!T) return alert('OCR library not loaded yet.');
+
+      ocrStatus.textContent = 'Reading image…';
+      previewList.innerHTML = '';
+      bulkActions.classList.add('hidden');
+
+      try{
+        const { data } = await T.recognize(ocrImageBlob, 'eng', { logger: m => { if (m.status) ocrStatus.textContent = `${m.status} ${m.progress?Math.round(m.progress*100)+'%':''}`; } });
+        const tasks = parseOcrToTasks(data.text||'', y, m);
+        if(!tasks.length){ ocrStatus.innerHTML = '<span class="danger">Could not parse tasks from photo. Try CSV for accuracy.</span>'; return; }
+        ocrStatus.innerHTML = `<span class="ok">Parsed ${tasks.length} candidate task(s). Review below.</span>`;
+        // Preview
+        previewList.innerHTML='';
+        tasks.forEach((t,i)=>{
+          const row=document.createElement('div'); row.className='card mini';
+          const who = t.assignees.length ? '✔ matched user' : `<span class="danger">⚠ not matched: ${t.unresolvedAssignee}</span>`;
+          row.innerHTML = `
+            <label class="mini"><input type="checkbox" class="pv-check" data-i="${i}" checked> Create</label>
+            <div><strong>${t.title}</strong> — ${t.description||''}</div>
+            <div>Ref ${t.ref}, Day ${t.scheduledDay}, Due ${t.dueDate}, Priority ${t.priority}</div>
+            <div>${who}</div>
+          `;
+          previewList.appendChild(row);
+        });
+        bulkActions.classList.remove('hidden');
+        btnCreateFromPreview.onclick = async ()=>{
+          let created=0;
+          const checks = previewList.querySelectorAll('.pv-check');
+          for(const chk of checks){
+            if(!chk.checked) continue;
+            const i = parseInt(chk.dataset.i,10);
+            const t = tasks[i];
+            const ass = t.assignees.length ? t.assignees : (currentUser ? [currentUser.uid] : []);
+            await addDoc(collection(db,'tasks'),{
+              title:t.title, description:t.description, priority:t.priority, dueDate:t.dueDate,
+              assignees:ass, completedBy:[], ref:t.ref, scheduledDay:t.scheduledDay,
+              createdBy:currentUser.uid, createdAt:serverTimestamp(), updatedAt:serverTimestamp()
+            });
+            created++;
+          }
+          toastMsg(`Created ${created} task(s)`);
+          sheetImage.value=''; ocrImageBlob=null; sheetPreview.classList.add('hidden'); ocrStatus.textContent=''; previewList.innerHTML=''; bulkActions.classList.add('hidden');
+        };
+      }catch(e){
+        console.error(e); ocrStatus.innerHTML = `<span class="danger">OCR failed: ${e.message}</span>`;
+      }
+    };
 
     /* ===== Filters & profile ===== */
     [searchInput,statusFilter,priorityFilter].forEach(el=>{el.addEventListener('input',renderTasks);el.addEventListener('change',renderTasks);});
@@ -606,7 +744,6 @@
       }
     });
 
-    // boot
     window.addEventListener('load', ()=> go(location.hash || '#/auth'));
   </script>
 </body>
