@@ -21,7 +21,7 @@
     html,body{height:100%}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
 
-    /* ===== Top brand bar with big logo ===== */
+    /* Big logo header */
     .brandBar{
       position:sticky;top:0;z-index:20;
       background:linear-gradient(180deg, color-mix(in srgb, var(--brand) 30%, var(--bg)) 0%, var(--bg) 60%);
@@ -29,19 +29,9 @@
       padding:10px 14px 8px;
     }
     .brandWrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center}
-    .brandLogo{
-      background:#fff;border:2px solid var(--accent);
-      box-shadow:0 3px 12px rgba(0,0,0,.25);
-      border-radius:12px;padding:8px;
-    }
-    .brandLogo img{
-      display:block;height:48px; /* big on mobile */
-      width:auto;object-fit:contain;
-    }
-    @media (min-width: 760px){
-      .brandLogo img{ height:64px; } /* bigger on desktop */
-    }
-
+    .brandLogo{background:#fff;border:2px solid var(--accent);box-shadow:0 3px 12px rgba(0,0,0,.25);border-radius:12px;padding:8px}
+    .brandLogo img{display:block;height:48px;width:auto;object-fit:contain}
+    @media (min-width: 760px){ .brandLogo img{ height:64px; } }
     .topMeta{max-width:1100px;margin:6px auto 0;display:flex;gap:12px;align-items:center;justify-content:space-between;padding:0 14px}
     .muted{color:var(--muted);font-size:12px}
     .topBtn{font-size:14px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text)}
@@ -88,19 +78,13 @@
       .tableWrap{border:none}
     }
 
-    /* Bottom tabs with greener active state */
+    /* Bottom tabs (green active) */
     .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--tabbg);
       border-top:2px solid color-mix(in srgb,var(--brand) 40%, var(--tab-border));
       padding:8px 10px  calc(8px + env(safe-area-inset-bottom));
       display:flex;gap:10px;justify-content:space-around;box-shadow:0 -6px 20px rgba(0,0,0,.15)}
-    .tabBtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px;border-radius:12px;border:1px solid var(--border);
-      background:transparent;color:var(--text);font-size:12px}
-    .tabBtn.active{
-      background:color-mix(in srgb, var(--accent) 16%, transparent);
-      border-color:var(--accent);
-      color:var(--accent);
-      outline:2px solid color-mix(in srgb,var(--accent) 35%, transparent)
-    }
+    .tabBtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:12px}
+    .tabBtn.active{background:color-mix(in srgb, var(--accent) 16%, transparent);border-color:var(--accent);color:var(--accent);outline:2px solid color-mix(in srgb,var(--accent) 35%, transparent)}
 
     .toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:10px 14px;z-index:40;display:none}
     .toast.show{display:block}
@@ -115,13 +99,8 @@
 <body>
   <!-- Big logo header -->
   <div class="brandBar">
-    <div class="brandWrap">
-      <div class="brandLogo"><img id="logoImg" alt="Alkegen" /></div>
-    </div>
-    <div class="topMeta">
-      <div id="authStatus" class="muted">Not signed in</div>
-      <button id="btnSignOut" class="topBtn hidden">Sign out</button>
-    </div>
+    <div class="brandWrap"><div class="brandLogo"><img id="logoImg" alt="Alkegen" /></div></div>
+    <div class="topMeta"><div id="authStatus" class="muted">Not signed in</div><button id="btnSignOut" class="topBtn hidden">Sign out</button></div>
   </div>
 
   <div class="app">
@@ -129,14 +108,8 @@
     <section id="page-auth" class="page">
       <div class="card">
         <h3>Sign in / Sign up</h3>
-        <div class="row">
-          <input id="email" type="email" placeholder="you@example.com" />
-          <input id="password" type="password" placeholder="password (min 6 chars)" />
-        </div>
-        <div class="row">
-          <button id="btnSignIn">Sign in</button>
-          <button class="secondary" id="btnSignUp">Create account</button>
-        </div>
+        <div class="row"><input id="email" type="email" placeholder="you@example.com" /><input id="password" type="password" placeholder="password (min 6 chars)" /></div>
+        <div class="row"><button id="btnSignIn">Sign in</button><button class="secondary" id="btnSignUp">Create account</button></div>
         <p class="hint">Ask an admin to mark you as a moderator if needed.</p>
       </div>
     </section>
@@ -144,39 +117,19 @@
     <!-- Tasks -->
     <section id="page-tasks" class="page hidden">
       <div class="card" id="filtersCard">
-        <div class="filtersHeader">
-          <strong>Filters</strong>
-          <button id="btnToggleFilters" class="secondary mini">Show</button>
-        </div>
+        <div class="filtersHeader"><strong>Filters</strong><button id="btnToggleFilters" class="secondary mini">Show</button></div>
         <div class="filtersBody" id="filtersBody">
           <div class="row">
             <input id="searchInput" placeholder="Search title…" />
-            <select id="statusFilter">
-              <option value="all">Status: All</option>
-              <option value="open">Status: Open</option>
-              <option value="done">Status: Done</option>
-            </select>
-            <select id="priorityFilter">
-              <option value="all">Priority: All</option>
-              <option value="normal">Normal</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
-            </select>
-            <select id="scopeFilter" class="hidden">
-              <option value="mine">Show: Mine</option>
-              <option value="all">Show: All</option>
-            </select>
+            <select id="statusFilter"><option value="all">Status: All</option><option value="open">Status: Open</option><option value="done">Status: Done</option></select>
+            <select id="priorityFilter"><option value="all">Priority: All</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select>
+            <select id="scopeFilter" class="hidden"><option value="mine">Show: Mine</option><option value="all">Show: All</option></select>
           </div>
         </div>
       </div>
-
       <div class="card tableWrap">
         <table>
-          <thead>
-            <tr>
-              <th>Me</th><th>Title</th><th>Priority</th><th>Due</th><th>Assignees</th><th>Done</th><th>Actions</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Me</th><th>Title</th><th>Priority</th><th>Due</th><th>Assignees</th><th>Done</th><th>Actions</th></tr></thead>
           <tbody id="taskTbody"></tbody>
         </table>
       </div>
@@ -188,17 +141,8 @@
         <h3>Create Task</h3>
         <div class="row"><input id="newTitle" placeholder="Task title" /></div>
         <div class="row"><textarea id="newDesc" placeholder="Description (optional)"></textarea></div>
-        <div class="row">
-          <select id="newPriority">
-            <option value="normal">Normal</option>
-            <option value="high">High</option>
-            <option value="urgent">Urgent</option>
-          </select>
-          <input id="newDue" type="date" />
-        </div>
-        <div class="row">
-          <select id="newAssignees" multiple><option value="">Pick assignees…</option></select>
-        </div>
+        <div class="row"><select id="newPriority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select><input id="newDue" type="date" /></div>
+        <div class="row"><select id="newAssignees" multiple><option value="">Pick assignees…</option></select></div>
         <div class="row"><button id="btnCreate">Create task</button></div>
         <p id="modHint" class="hint hidden danger">Only moderators can create tasks.</p>
       </div>
@@ -207,52 +151,28 @@
       <div class="card">
         <h3>Import from Spreadsheet (Single CSV)</h3>
         <p class="hint">Export the whole sheet as CSV. Expected: A=Name, B=Count(ignored), C…AG=Days (Refs), AH=Area, AI=Ref.</p>
-        <div class="row">
-          <select id="impMonth"><option value="">Month…</option></select>
-          <select id="impYear"><option value="">Year…</option></select>
-        </div>
-        <div class="row">
-          <input id="csvOne" type="file" accept=".csv" />
-        </div>
-        <div class="row">
-          <button id="btnParseSingleCsv" class="secondary">Preview tasks</button>
-          <button id="btnClearCsv" class="secondary">Clear</button>
-        </div>
+        <div class="row"><select id="impMonth"><option value="">Month…</option></select><select id="impYear"><option value="">Year…</option></select></div>
+        <div class="row"><input id="csvOne" type="file" accept=".csv" /></div>
+        <div class="row"><button id="btnParseSingleCsv" class="secondary">Preview tasks</button><button id="btnClearCsv" class="secondary">Clear</button></div>
         <div id="csvInfo" class="hint"></div>
-        <div id="csvPreview" class="hidden">
-          <div class="divider"></div>
-          <div class="row"><button id="btnCreateCsvTasks">Create all tasks shown</button></div>
-          <div id="csvList" class="mini" style="margin-top:8px"></div>
-        </div>
+        <div id="csvPreview" class="hidden"><div class="divider"></div><div class="row"><button id="btnCreateCsvTasks">Create all tasks shown</button></div><div id="csvList" class="mini" style="margin-top:8px"></div></div>
       </div>
 
       <!-- OCR importer -->
       <div class="card">
         <h3>Scan Sheet (Photo)</h3>
         <p class="hint">Choose from camera or gallery. Drag & drop works on desktop. CSV is still most accurate.</p>
-        <div class="row">
-          <input id="sheetImage" type="file" accept="image/*" />
-        </div>
+        <div class="row"><input id="sheetImage" type="file" accept="image/*" /></div>
         <div id="dropZone" class="drop mini">Drag & drop an image here</div>
         <div id="ocrStatus" class="hint"></div>
-
-        <!-- OCR Debug Toggle -->
-        <div class="row">
-          <button id="btnShowOcrText" class="ghost mini">Show OCR text</button>
-        </div>
+        <div class="row"><button id="btnShowOcrText" class="ghost mini">Show OCR text</button></div>
         <pre id="ocrText" class="card mini hidden" style="white-space:pre-wrap;max-height:40vh;overflow:auto"></pre>
-
         <div id="sheetPreview" class="hidden">
           <div class="divider"></div>
-          <div class="row">
-            <button id="btnExtract" class="secondary">Recognize & Preview</button>
-            <button id="btnClearPreview" class="secondary">Clear</button>
-          </div>
+          <div class="row"><button id="btnExtract" class="secondary">Recognize & Preview</button><button id="btnClearPreview" class="secondary">Clear</button></div>
           <div id="previewDiag" class="hint"></div>
           <div id="previewList" class="mini" style="margin-top:8px"></div>
-          <div class="row hidden" id="bulkActions">
-            <button id="btnCreateFromPreview">Create selected tasks</button>
-          </div>
+          <div class="row hidden" id="bulkActions"><button id="btnCreateFromPreview">Create selected tasks</button></div>
         </div>
       </div>
     </section>
@@ -261,32 +181,20 @@
     <section id="page-profile" class="page hidden">
       <div class="card">
         <h3>Your Profile</h3>
-        <div class="row" style="align-items:center">
-          <div class="avatar big"><img id="profAvatarImg" alt="" /></div>
-          <div class="hint">This photo shows on your tasks for teammates.</div>
-        </div>
-        <div class="row">
-          <input id="profName" placeholder="Your name" />
-          <input id="profJob" placeholder="Job title (e.g., Supervisor)" />
-        </div>
+        <div class="row" style="align-items:center"><div class="avatar big"><img id="profAvatarImg" alt="" /></div><div class="hint">This photo shows on your tasks for teammates.</div></div>
+        <div class="row"><input id="profName" placeholder="Your name" /><input id="profJob" placeholder="Job title (e.g., Supervisor)" /></div>
         <input id="profPhoto" placeholder="Photo URL (optional)" />
-        <div class="row">
-          <input id="profPhotoFile" type="file" accept="image/*" />
-          <button id="btnUploadPhoto" class="secondary">Upload photo</button>
-        </div>
-        <div class="row">
-          <button id="btnSaveProfile">Save Profile</button>
-          <button class="secondary" id="btnRefreshProfile">Refresh</button>
-        </div>
+        <div class="row"><input id="profPhotoFile" type="file" accept="image/*" /><button id="btnUploadPhoto" class="secondary">Upload photo</button></div>
+        <div class="row"><button id="btnSaveProfile">Save Profile</button><button class="secondary" id="btnRefreshProfile">Refresh</button></div>
       </div>
     </section>
   </div>
 
   <!-- Tabs -->
   <div class="tabs hidden" id="tabs">
-    <button class="tabBtn" data-route="#/tasks"><span class="tabIcon">🗂️</span><span>Tasks</span></button>
-    <button class="tabBtn" data-route="#/create"><span class="tabIcon">📄</span><span>Create</span></button>
-    <button class="tabBtn" data-route="#/profile"><span class="tabIcon">👤</span><span>Profile</span></button>
+    <button class="tabBtn" data-route="#/tasks"><span>🗂️</span><span>Tasks</span></button>
+    <button class="tabBtn" data-route="#/create"><span>📄</span><span>Create</span></button>
+    <button class="tabBtn" data-route="#/profile"><span>👤</span><span>Profile</span></button>
   </div>
 
   <div id="toast" class="toast">Saved</div>
@@ -415,7 +323,7 @@
     const previewList=$('previewList'), bulkActions=$('bulkActions'), btnCreateFromPreview=$('btnCreateFromPreview');
     const btnShowOcrText=$('btnShowOcrText'), ocrText=$('ocrText'), previewDiag=$('previewDiag');
 
-    // Profile photo upload refs
+    // Profile photo upload
     const profPhoto=$('profPhoto'), profPhotoFile=$('profPhotoFile'), btnUploadPhoto=$('btnUploadPhoto');
 
     // Populate Month/Year options
@@ -628,7 +536,7 @@
       csvPreview.classList.add('hidden'); csvList.innerHTML=''; csvInfo.textContent=''; csvOne.value='';
     };
 
-    /* ===== OCR v2 (camera or gallery + drag&drop) ===== */
+    /* ===== OCR v3 ===== */
     let ocrImageBlob = null;
     sheetImage.onchange = () => { const f = sheetImage.files?.[0]; if(!f) return; ocrImageBlob=f; sheetPreview.classList.remove('hidden'); ocrStatus.textContent=`Selected: ${f.name}`; previewList.innerHTML=''; $('bulkActions').classList.add('hidden'); };
     ;['dragenter','dragover'].forEach(evt=>dropZone.addEventListener(evt,e=>{e.preventDefault(); dropZone.classList.add('drag');}));
@@ -636,45 +544,58 @@
     dropZone.addEventListener('drop', (e)=>{ const f=e.dataTransfer.files?.[0]; if(f && f.type.startsWith('image/')){ ocrImageBlob=f; sheetPreview.classList.remove('hidden'); ocrStatus.textContent=`Selected: ${f.name}`; previewList.innerHTML=''; $('bulkActions').classList.add('hidden'); } });
 
     function normalizeDigits(s){
-      // Replace common OCR mistakes when characters appear as standalone digits
-      return s
-        .replace(/\bO\b/g,'0')
-        .replace(/\bS\b/g,'5')
-        .replace(/\bI\b/g,'1')
-        .replace(/\bl\b/g,'1')
-        .replace(/[–—]/g,'-');
+      return s.replace(/\bO\b/g,'0').replace(/\bS\b/g,'5').replace(/\bI\b/g,'1').replace(/\bl\b/g,'1').replace(/[–—]/g,'-');
+    }
+
+    // NEW: robust ref library from the right-hand table
+    function buildRefLibFromLines(lines){
+      const lib = new Map();
+      // Try to find header with both "Area" and "Ref"
+      let start = lines.findIndex(l => /area/i.test(l) && /\bref\b/i.test(l));
+      if (start !== -1) start++; else start = 0;
+
+      for(let i=start;i<lines.length;i++){
+        const ln = lines[i];
+        if (/legend/i.test(ln)) break;
+
+        // Pattern 1: "Area name - focus on ...  7"  (last number is ref)
+        const nums = ln.match(/\b(\d{1,2})\b/g);
+        if (nums && nums.length){
+          const ref = nums[nums.length-1]; // take the last 1–2 digit number
+          // Pull area text (before that last number, trimming columns)
+          const idx = ln.lastIndexOf(ref);
+          let area = ln.slice(0, idx).replace(/\s{2,}/g, ' ').trim();
+          if (!area) continue;
+
+          // Split out "focus on ..."
+          let title = area, desc = '';
+          const m = area.match(/^(.*?)[-–]\s*focus on\s*(.*)$/i);
+          if (m){ title = m[1].trim(); desc = 'Focus: ' + m[2].trim(); }
+
+          if (title) lib.set(String(parseInt(ref,10)), {title, desc});
+          continue;
+        }
+
+        // Pattern 2: "7 - Area name ..." or "Ref: 7 Area name ..."
+        let m = ln.match(/^\bref[:\s]*([0-9]{1,2})\b\s+(.*)$/i) || ln.match(/^\b([0-9]{1,2})\b\s*[-:]\s*(.*)$/);
+        if (m){
+          const ref = String(parseInt(m[1],10));
+          let area = (m[2]||'').trim(); let title=area, desc='';
+          const f = area.match(/^(.*?)[-–]\s*focus on\s*(.*)$/i);
+          if (f){ title=f[1].trim(); desc='Focus: '+f[2].trim(); }
+          if (title) lib.set(ref,{title,desc});
+        }
+      }
+      return lib;
     }
 
     function parseOcrToTasks(rawText, year, month){
       const cleaned = normalizeDigits(rawText);
       const lines = cleaned.split(/\r?\n/).map(s=>s.replace(/\s+$/,'').trim()).filter(Boolean);
 
-      // Build Ref Library (right table)
-      // Accept: "Maintenance Workshop – focus on Permit to work ... Ref 7"
-      // Also accept: "7 - Maintenance Workshop ..." or "Ref:7 Maintenance Workshop"
-      const lib = new Map();
-      for(const ln of lines){
-        let m = ln.match(/^(.*?)(?:\s*-\s*focus on\s*(.*?))?\s+\bref[:\s]*([0-9]{1,2})\b/i);
-        if(m){
-          const area=m[1].trim(), focus=m[2]?.trim(), ref=String(m[3]).trim();
-          const title = area.replace(/\s*[-–]\s*$/,'').trim();
-          const desc = focus ? ('Focus: '+focus) : '';
-          if(title) lib.set(ref,{title,desc});
-          continue;
-        }
-        // "7 - Maintenance Workshop - focus on ..."
-        m = ln.match(/^\b([0-9]{1,2})\b\s*[-:]\s*(.*)$/);
-        if(m){
-          const ref=String(m[1]).trim();
-          let area = m[2].trim(); let desc='';
-          const f = area.match(/^(.*?)[-–]\s*focus on\s*(.*)$/i);
-          if(f){ area=f[1].trim(); desc='Focus: '+f[2].trim(); }
-          if(area) lib.set(ref,{title:area, desc});
-          continue;
-        }
-      }
+      const lib = buildRefLibFromLines(lines);
 
-      // Assignments (left grid): "John Doe 1 3 7" or "John Doe: 1,3,7"
+      // Assignments (left grid)
       const assignments = [];
       const nameRow = /^([A-Za-z][A-Za-z .()'-]+)\s*[:\-]?\s*(.*)$/;
       for(const ln of lines){
@@ -682,8 +603,8 @@
         if(!n) continue;
         const name = n[1].trim();
         const rest = n[2].trim();
-        // Must have at least one number 1..31 in rest
         const refs = (rest.match(/\b([0-9]{1,2})\b/g)||[]);
+        // Require at least one small number after the name to treat as day/ref hints
         if(refs.length===0) continue;
         assignments.push({name, refs: refs.map(r=>String(parseInt(r,10)))});
       }
@@ -698,7 +619,7 @@
         const assUid = nameToUid(a.name);
         let dayIndex=1;
         for(const ref of a.refs){
-          if(!lib.has(ref)) continue; // skip unknown ref
+          if(!lib.has(ref)) continue;
           const {title, desc} = lib.get(ref);
           tasks.push({
             title, description:desc, dueDate:dueStr, priority:basePriority,
@@ -712,13 +633,12 @@
       return { tasks, counts:{ lines:lines.length, refs:lib.size, names:assignments.length } };
     }
 
-    $('btnShowOcrText').onclick = ()=>{ ocrText.classList.toggle('hidden'); };
+    $('btnShowOcrText').onclick = ()=>{ $('ocrText').classList.toggle('hidden'); };
 
     $('btnClearPreview').onclick = () => {
       sheetImage.value = ''; ocrImageBlob = null; sheetPreview.classList.add('hidden');
       ocrStatus.textContent = ''; previewList.innerHTML = ''; $('bulkActions').classList.add('hidden');
-      ocrText.textContent = '';
-      previewDiag.textContent = '';
+      $('ocrText').textContent = ''; $('previewDiag').textContent = '';
     };
 
     $('btnExtract').onclick = async () => {
@@ -728,32 +648,31 @@
       if(!m||!y) return alert('Pick Month and Year (used for due date)');
       if (!window.Tesseract) return alert('OCR library not loaded yet.');
 
-      ocrStatus.textContent = 'Reading image…'; previewList.innerHTML=''; $('bulkActions').classList.add('hidden'); previewDiag.textContent='';
+      ocrStatus.textContent = 'Reading image…'; previewList.innerHTML=''; $('bulkActions').classList.add('hidden'); $('previewDiag').textContent='';
       try{
         const { data } = await Tesseract.recognize(ocrImageBlob, 'eng', { logger: p => { if (p.status) ocrStatus.textContent = `${p.status} ${p.progress?Math.round(p.progress*100)+'%':''}`; } });
         const text = data.text||'';
-        ocrText.textContent = text; // show raw OCR when toggled
+        $('ocrText').textContent = text;
         const { tasks, counts } = parseOcrToTasks(text, y, m);
 
         if (!counts.refs) {
-          ocrStatus.innerHTML = '<span class="danger">Could not find any "Ref" lines (right table). Make sure the photo includes the tasks table.</span>';
-          previewDiag.textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
+          ocrStatus.innerHTML = '<span class="danger">Could not find any "Ref" lines (right table). Try to include the right table clearly in the photo.</span>';
+          $('previewDiag').textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
           return;
         }
         if (!counts.names) {
-          ocrStatus.innerHTML = '<span class="danger">Found the tasks table, but no name rows with numbers. Try framing the left grid clearly, or use CSV.</span>';
-          previewDiag.textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
-          // Still allow creating unassigned tasks once we know refs (not implemented here to avoid duplicates).
+          ocrStatus.innerHTML = '<span class="danger">Found the tasks table, but no name rows with numbers. Reframe the left grid, or use CSV.</span>';
+          $('previewDiag').textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
           return;
         }
         if(!tasks.length){
-          ocrStatus.innerHTML = '<span class="danger">Parsed refs and names, but could not match any numbers to known refs. Check photo clarity or try CSV.</span>';
-          previewDiag.textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
+          ocrStatus.innerHTML = '<span class="danger">Parsed refs and names, but none of the numbers matched the Ref table.</span>';
+          $('previewDiag').textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
           return;
         }
 
         ocrStatus.innerHTML = `<span class="ok">Parsed ${tasks.length} candidate task(s).</span>`;
-        previewDiag.textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
+        $('previewDiag').textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
 
         tasks.forEach((t,i)=>{
           const row=document.createElement('div'); row.className='card mini';
@@ -762,12 +681,12 @@
             <div><strong>${t.title}</strong> — ${t.description||''}</div>
             <div>Ref ${t.ref}, Day ${t.scheduledDay}, Due ${t.dueDate}, Priority ${t.priority}</div>
             <div>${who}</div>`;
-          previewList.appendChild(row);
+          $('previewList').appendChild(row);
         });
         $('bulkActions').classList.remove('hidden');
         $('btnCreateFromPreview').onclick = async ()=>{
           let created=0;
-          const checks = previewList.querySelectorAll('.pv-check');
+          const checks = document.querySelectorAll('.pv-check');
           for(const chk of checks){
             if(!chk.checked) continue;
             const i = parseInt(chk.dataset.i,10);
@@ -781,7 +700,7 @@
       }catch(e){ console.error(e); ocrStatus.innerHTML = `<span class="danger">OCR failed: ${e.message}</span>`; }
     };
 
-    /* Profile actions (incl. upload) */
+    /* Profile */
     $('btnSaveProfile').onclick=async()=>{ if(!currentUser) return; try{ await saveMyProfile(currentUser.uid); toastMsg('Profile saved'); }catch(e){ alert('Error: '+e.message);} };
     $('btnRefreshProfile').onclick=async()=>{ if(!currentUser) return; await loadMyProfile(currentUser.uid); };
     $('btnUploadPhoto').onclick = async ()=>{
