@@ -6,9 +6,7 @@
   <title>Work Tasks</title>
   <style>
     :root{
-      --brand:#002D62;      /* Alkegen dark blue */
-      --accent:#53A65C;     /* Alkegen green */
-
+      --brand:#002D62; --accent:#53A65C;
       --bg:#0e1116; --card:#151a24; --text:#eef2f7; --muted:#a3adbd; --border:#273045;
       --shadow:0 12px 40px rgba(0,0,0,.5);
       --btn:var(--brand); --btn-text:#fff; --pill:#1d2433; --danger:#ff6b6b; --ok:#34d399;
@@ -21,17 +19,13 @@
     html,body{height:100%}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
 
-    /* Big logo header */
-    .brandBar{
-      position:sticky;top:0;z-index:20;
-      background:linear-gradient(180deg, color-mix(in srgb, var(--brand) 30%, var(--bg)) 0%, var(--bg) 60%);
-      border-bottom:2px solid color-mix(in srgb,var(--brand) 40%, var(--border));
-      padding:10px 14px 8px;
-    }
+    /* Brand header with big logo */
+    .brandBar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg, color-mix(in srgb, var(--brand) 30%, var(--bg)) 0%, var(--bg) 60%);
+      border-bottom:2px solid color-mix(in srgb,var(--brand) 40%, var(--border));padding:10px 14px 8px;}
     .brandWrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center}
     .brandLogo{background:#fff;border:2px solid var(--accent);box-shadow:0 3px 12px rgba(0,0,0,.25);border-radius:12px;padding:8px}
     .brandLogo img{display:block;height:48px;width:auto;object-fit:contain}
-    @media (min-width: 760px){ .brandLogo img{ height:64px; } }
+    @media (min-width:760px){.brandLogo img{height:64px}}
     .topMeta{max-width:1100px;margin:6px auto 0;display:flex;gap:12px;align-items:center;justify-content:space-between;padding:0 14px}
     .muted{color:var(--muted);font-size:12px}
     .topBtn{font-size:14px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text)}
@@ -69,7 +63,7 @@
     .avatar img{width:100%;height:100%;object-fit:cover;display:block}
     .avatar.more{background:transparent;border:none;font-weight:600}
 
-    @media (max-width: 760px){
+    @media (max-width:760px){
       th{display:none}
       table, thead, tbody, tr, td{display:block;width:100%}
       tr{border-bottom:1px solid var(--border)}
@@ -78,7 +72,7 @@
       .tableWrap{border:none}
     }
 
-    /* Bottom tabs (green active) */
+    /* Bottom tabs */
     .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--tabbg);
       border-top:2px solid color-mix(in srgb,var(--brand) 40%, var(--tab-border));
       padding:8px 10px  calc(8px + env(safe-area-inset-bottom));
@@ -97,7 +91,6 @@
   </style>
 </head>
 <body>
-  <!-- Big logo header -->
   <div class="brandBar">
     <div class="brandWrap"><div class="brandLogo"><img id="logoImg" alt="Alkegen" /></div></div>
     <div class="topMeta"><div id="authStatus" class="muted">Not signed in</div><button id="btnSignOut" class="topBtn hidden">Sign out</button></div>
@@ -200,12 +193,12 @@
   <div id="toast" class="toast">Saved</div>
   <div id="debug"></div>
 
-  <!-- Libraries -->
+  <!-- Libs -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
 
   <script type="module">
-    /* Error surface */
+    /* Debug surface */
     window.addEventListener('error', e => {
       const box = document.getElementById('debug');
       box.style.display='block';
@@ -235,7 +228,7 @@
     const db   = getFirestore(app);
     const storage = getStorage(app);
 
-    /* Utilities & routing */
+    /* Shortcuts & routing */
     const $ = (id)=>document.getElementById(id);
     const toast = $('toast');
     const pages={'#/auth':$('page-auth'),'#/tasks':$('page-tasks'),'#/create':$('page-create'),'#/profile':$('page-profile')};
@@ -320,22 +313,21 @@
     // OCR
     const sheetImage=$('sheetImage'), dropZone=$('dropZone');
     const ocrStatus=$('ocrStatus'), sheetPreview=$('sheetPreview'), btnExtract=$('btnExtract'), btnClearPreview=$('btnClearPreview');
-    const previewList=$('previewList'), bulkActions=$('bulkActions'), btnCreateFromPreview=$('btnCreateFromPreview');
+    const previewList=$('previewList'), bulkActions=$('bulkActions');
     const btnShowOcrText=$('btnShowOcrText'), ocrText=$('ocrText'), previewDiag=$('previewDiag');
 
-    // Profile photo upload
+    // Profile photo
     const profPhoto=$('profPhoto'), profPhotoFile=$('profPhotoFile'), btnUploadPhoto=$('btnUploadPhoto');
 
-    // Populate Month/Year options
-    function populateMonthYear(){
+    // Populate Month/Year
+    (function(){
       impMonth.innerHTML = '<option value="">Month…</option>';
       const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       months.forEach((m,i)=>{ const o=document.createElement('option'); o.value=(i+1); o.textContent=m; impMonth.appendChild(o); });
       impYear.innerHTML = '<option value="">Year…</option>';
       const yNow=new Date().getFullYear();
       for(let y=yNow-1;y<=yNow+2;y++){ const o=document.createElement('option'); o.value=y; o.textContent=y; impYear.appendChild(o); }
-    }
-    populateMonthYear();
+    })();
 
     /* Filters */
     btnToggleFilters.onclick=()=>{ const c=document.getElementById('filtersCard'); c.classList.toggle('open'); btnToggleFilters.textContent=c.classList.contains('open')?'Hide':'Show'; };
@@ -536,7 +528,35 @@
       csvPreview.classList.add('hidden'); csvList.innerHTML=''; csvInfo.textContent=''; csvOne.value='';
     };
 
-    /* ===== OCR v3 ===== */
+    /* ===== Image pre-processing (canvas) ===== */
+    async function preprocessImageToBlob(file){
+      const img = new Image(); img.crossOrigin='anonymous';
+      const url = URL.createObjectURL(file);
+      await new Promise((res,rej)=>{ img.onload=()=>res(); img.onerror=rej; img.src=url; });
+      const maxW = 2000; // limit size to speed OCR
+      const scale = Math.min(1, maxW / img.width);
+      const w = Math.round(img.width*scale), h = Math.round(img.height*scale);
+      const canvas = document.createElement('canvas'); canvas.width=w; canvas.height=h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img,0,0,w,h);
+      // grayscale + contrast + threshold
+      const im = ctx.getImageData(0,0,w,h);
+      const d = im.data; const contrast = 1.25; const threshold = 160; // tweakable
+      for(let i=0;i<d.length;i+=4){
+        let r=d[i], g=d[i+1], b=d[i+2];
+        let y = 0.2126*r + 0.7152*g + 0.0722*b;       // luminance
+        y = (y-128)*contrast + 128;                   // contrast
+        y = Math.max(0, Math.min(255, y));
+        const bw = y > threshold ? 255 : 0;           // binarize
+        d[i]=d[i+1]=d[i+2]=bw; d[i+3]=255;
+      }
+      ctx.putImageData(im,0,0);
+      const blob = await new Promise(res=> canvas.toBlob(res,'image/png',1));
+      URL.revokeObjectURL(url);
+      return blob;
+    }
+
+    /* ===== OCR v4 (block parsing) ===== */
     let ocrImageBlob = null;
     sheetImage.onchange = () => { const f = sheetImage.files?.[0]; if(!f) return; ocrImageBlob=f; sheetPreview.classList.remove('hidden'); ocrStatus.textContent=`Selected: ${f.name}`; previewList.innerHTML=''; $('bulkActions').classList.add('hidden'); };
     ;['dragenter','dragover'].forEach(evt=>dropZone.addEventListener(evt,e=>{e.preventDefault(); dropZone.classList.add('drag');}));
@@ -547,45 +567,43 @@
       return s.replace(/\bO\b/g,'0').replace(/\bS\b/g,'5').replace(/\bI\b/g,'1').replace(/\bl\b/g,'1').replace(/[–—]/g,'-');
     }
 
-    // NEW: robust ref library from the right-hand table
-    function buildRefLibFromLines(lines){
+    // Join wrapped lines into blocks; last 1–2 digit number becomes Ref
+    function buildRefLibFromBlocks(lines){
       const lib = new Map();
-      // Try to find header with both "Area" and "Ref"
+      // locate header line with "Area" and "Ref" if present
       let start = lines.findIndex(l => /area/i.test(l) && /\bref\b/i.test(l));
-      if (start !== -1) start++; else start = 0;
+      if (start === -1) start = 0; else start++;
+
+      let block = '';
+      const flush = () => {
+        const s = block.trim(); if(!s) return;
+        const nums = s.match(/\b(\d{1,2})\b/g);
+        if(nums && nums.length){
+          const ref = String(parseInt(nums[nums.length-1],10));
+          // area = remove trailing ref + "Ref" word fragments
+          let area = s.replace(new RegExp(`\\b${ref}\\b\\s*$`),'').replace(/\bref\b[:\s]*$/i,'').trim();
+          // collapse spaces
+          area = area.replace(/\s{2,}/g,' ');
+          // title + optional focus
+          let title = area, desc = '';
+          const m = area.match(/^(.*?)[-–]\s*focus on\s*(.*)$/i);
+          if (m){ title=m[1].trim(); desc='Focus: '+m[2].trim(); }
+          if (title) lib.set(ref, {title, desc});
+        }
+        block = '';
+      };
 
       for(let i=start;i<lines.length;i++){
         const ln = lines[i];
-        if (/legend/i.test(ln)) break;
-
-        // Pattern 1: "Area name - focus on ...  7"  (last number is ref)
-        const nums = ln.match(/\b(\d{1,2})\b/g);
-        if (nums && nums.length){
-          const ref = nums[nums.length-1]; // take the last 1–2 digit number
-          // Pull area text (before that last number, trimming columns)
-          const idx = ln.lastIndexOf(ref);
-          let area = ln.slice(0, idx).replace(/\s{2,}/g, ' ').trim();
-          if (!area) continue;
-
-          // Split out "focus on ..."
-          let title = area, desc = '';
-          const m = area.match(/^(.*?)[-–]\s*focus on\s*(.*)$/i);
-          if (m){ title = m[1].trim(); desc = 'Focus: ' + m[2].trim(); }
-
-          if (title) lib.set(String(parseInt(ref,10)), {title, desc});
-          continue;
-        }
-
-        // Pattern 2: "7 - Area name ..." or "Ref: 7 Area name ..."
-        let m = ln.match(/^\bref[:\s]*([0-9]{1,2})\b\s+(.*)$/i) || ln.match(/^\b([0-9]{1,2})\b\s*[-:]\s*(.*)$/);
-        if (m){
-          const ref = String(parseInt(m[1],10));
-          let area = (m[2]||'').trim(); let title=area, desc='';
-          const f = area.match(/^(.*?)[-–]\s*focus on\s*(.*)$/i);
-          if (f){ title=f[1].trim(); desc='Focus: '+f[2].trim(); }
-          if (title) lib.set(ref,{title,desc});
-        }
+        if (/legend/i.test(ln)) { flush(); break; }
+        // end a block if line is just a small number OR obvious row separator
+        if (/^\s*\d{1,2}\s*$/.test(ln)) { block += ' ' + ln; flush(); continue; }
+        // accumulate; many sheets wrap area then put ref at end or next line
+        block += (block ? ' ' : '') + ln;
+        // heuristic: if line ends with a small number, flush
+        if (/\b\d{1,2}\s*$/.test(ln)) flush();
       }
+      flush();
       return lib;
     }
 
@@ -593,7 +611,7 @@
       const cleaned = normalizeDigits(rawText);
       const lines = cleaned.split(/\r?\n/).map(s=>s.replace(/\s+$/,'').trim()).filter(Boolean);
 
-      const lib = buildRefLibFromLines(lines);
+      const lib = buildRefLibFromBlocks(lines);
 
       // Assignments (left grid)
       const assignments = [];
@@ -604,7 +622,6 @@
         const name = n[1].trim();
         const rest = n[2].trim();
         const refs = (rest.match(/\b([0-9]{1,2})\b/g)||[]);
-        // Require at least one small number after the name to treat as day/ref hints
         if(refs.length===0) continue;
         assignments.push({name, refs: refs.map(r=>String(parseInt(r,10)))});
       }
@@ -648,25 +665,30 @@
       if(!m||!y) return alert('Pick Month and Year (used for due date)');
       if (!window.Tesseract) return alert('OCR library not loaded yet.');
 
+      ocrStatus.textContent = 'Enhancing image…';
+      let preBlob;
+      try{ preBlob = await preprocessImageToBlob(ocrImageBlob); }
+      catch{ preBlob = ocrImageBlob; } // fall back
+
       ocrStatus.textContent = 'Reading image…'; previewList.innerHTML=''; $('bulkActions').classList.add('hidden'); $('previewDiag').textContent='';
       try{
-        const { data } = await Tesseract.recognize(ocrImageBlob, 'eng', { logger: p => { if (p.status) ocrStatus.textContent = `${p.status} ${p.progress?Math.round(p.progress*100)+'%':''}`; } });
+        const { data } = await Tesseract.recognize(preBlob, 'eng', { logger: p => { if (p.status) ocrStatus.textContent = `${p.status} ${p.progress?Math.round(p.progress*100)+'%':''}`; } });
         const text = data.text||'';
         $('ocrText').textContent = text;
         const { tasks, counts } = parseOcrToTasks(text, y, m);
 
         if (!counts.refs) {
-          ocrStatus.innerHTML = '<span class="danger">Could not find any "Ref" lines (right table). Try to include the right table clearly in the photo.</span>';
+          ocrStatus.innerHTML = '<span class="danger">Still can’t find the right-table “Ref” rows. Try a closer, flatter photo with the **right table fully in frame** (or use CSV).</span>';
           $('previewDiag').textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
           return;
         }
         if (!counts.names) {
-          ocrStatus.innerHTML = '<span class="danger">Found the tasks table, but no name rows with numbers. Reframe the left grid, or use CSV.</span>';
+          ocrStatus.innerHTML = '<span class="danger">Found the tasks table, but no name rows with day numbers. Reframe the left grid, or use CSV.</span>';
           $('previewDiag').textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
           return;
         }
         if(!tasks.length){
-          ocrStatus.innerHTML = '<span class="danger">Parsed refs and names, but none of the numbers matched the Ref table.</span>';
+          ocrStatus.innerHTML = '<span class="danger">Parsed refs and names, but numbers didn’t match any Ref rows.</span>';
           $('previewDiag').textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
           return;
         }
@@ -700,7 +722,7 @@
       }catch(e){ console.error(e); ocrStatus.innerHTML = `<span class="danger">OCR failed: ${e.message}</span>`; }
     };
 
-    /* Profile */
+    /* Profile + storage */
     $('btnSaveProfile').onclick=async()=>{ if(!currentUser) return; try{ await saveMyProfile(currentUser.uid); toastMsg('Profile saved'); }catch(e){ alert('Error: '+e.message);} };
     $('btnRefreshProfile').onclick=async()=>{ if(!currentUser) return; await loadMyProfile(currentUser.uid); };
     $('btnUploadPhoto').onclick = async ()=>{
