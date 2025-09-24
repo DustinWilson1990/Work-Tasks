@@ -19,7 +19,7 @@
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
 
-/* brand header */
+/* Brand header */
 .brandBar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg, color-mix(in srgb, var(--brand) 30%, var(--bg)) 0%, var(--bg) 60%);
   border-bottom:2px solid color-mix(in srgb,var(--brand) 40%, var(--border));padding:10px 14px 8px;}
 .brandWrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center}
@@ -60,6 +60,7 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
 .avatars{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .avatar{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--pill);color:var(--text);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;overflow:hidden}
 .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.extChip{display:inline-block;padding:4px 8px;border-radius:999px;background:color-mix(in srgb,var(--accent) 18%, transparent);border:1px solid color-mix(in srgb,var(--accent) 55%, var(--border));margin:2px 4px 0 0;font-size:12px}
 
 @media (max-width:760px){
   th{display:none}
@@ -69,6 +70,15 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
   td[data-label]::before{content:attr(data-label) " ";font-size:12px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.02em}
   .tableWrap{border:none}
 }
+
+/* Create Hub */
+.grid5{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:560px){.grid5{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:900px){.grid5{grid-template-columns:repeat(3,1fr)}}
+.bigBtn{display:flex;gap:12px;align-items:center;justify-content:flex-start;padding:14px;border-radius:14px;border:1px solid var(--border);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));box-shadow:var(--shadow)}
+.bigBtn span{font-size:28px}
+.bigBtn strong{display:block;font-size:16px}
+.bigBtn small{display:block;color:var(--muted);font-size:12px}
 
 /* tabs */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--tabbg);
@@ -121,60 +131,97 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
       </div>
     </section>
 
-    <!-- CREATE -->
-    <section id="page-create" class="page hidden">
+    <!-- CREATE HUB -->
+    <section id="page-create-hub" class="page hidden">
+      <div class="card">
+        <h3>Create & Import</h3>
+        <div class="grid5">
+          <button class="bigBtn" data-route="#/create/single"><span>📝</span><div><strong>Create Task</strong><small>Enter details manually</small></div></button>
+          <button class="bigBtn" data-route="#/create/csv"><span>📄</span><div><strong>Import via CSV</strong><small>Whole sheet export</small></div></button>
+          <button class="bigBtn" data-route="#/create/ocr"><span>📷</span><div><strong>Import via Photo</strong><small>Names + numbers only</small></div></button>
+          <button class="bigBtn" data-route="#/refs/tasks"><span>📚</span><div><strong>Task Reference Library</strong><small>Ref → Title/Description</small></div></button>
+          <button class="bigBtn" data-route="#/refs/people"><span>👥</span><div><strong>People Reference Library</strong><small>Assign non-app folks</small></div></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CREATE SINGLE -->
+    <section id="page-create-single" class="page hidden">
       <div class="card">
         <h3>Create Task</h3>
         <div class="row"><input id="newTitle" placeholder="Task title" /></div>
         <div class="row"><textarea id="newDesc" placeholder="Description (optional)"></textarea></div>
         <div class="row"><select id="newPriority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select><input id="newDue" type="date" /></div>
-        <div class="row"><select id="newAssignees" multiple><option value="">Pick assignees…</option></select></div>
-        <div class="row"><button id="btnCreate">Create task</button></div>
+        <div class="row"><select id="newAssignees" multiple><option value="">Pick internal users…</option></select></div>
+        <div class="row"><select id="newExtAssignees" multiple><option value="">Pick external people…</option></select></div>
+        <div class="row"><button id="btnCreate">Create task</button><button class="secondary" data-route="#/create">Back</button></div>
         <p id="modHint" class="hint hidden dangerText">Only moderators can create tasks.</p>
       </div>
+    </section>
 
-      <!-- Reference Library (editable) -->
-      <div class="card">
-        <h3>Reference Library</h3>
-        <p class="hint">Map each <strong>Ref #</strong> to a task title and optional description (“Focus on …”). These rarely change.</p>
-        <div id="refsList"></div>
-        <div class="row">
-          <input id="refNum" placeholder="Ref #" />
-          <input id="refTitle" placeholder="Title (e.g., Maintenance Workshop)" />
-          <input id="refDesc" placeholder="Description (optional, e.g., Focus on Permit to Work/Housekeeping)" />
-        </div>
-        <div class="row"><button id="btnAddRef" class="secondary">Add / Update Ref</button><button id="btnSaveRefs">Save Library</button><button id="btnLoadRefs" class="secondary">Reload</button></div>
-        <div id="refsStatus" class="hint"></div>
-      </div>
-
-      <!-- CSV importer -->
+    <!-- IMPORT CSV -->
+    <section id="page-import-csv" class="page hidden">
       <div class="card">
         <h3>Import from Spreadsheet (CSV)</h3>
-        <p class="hint">Single CSV export of the sheet. A=Name, C…AG=Days (Ref numbers). We look refs up in the library above.</p>
+        <p class="hint">A=Name, C…AG=Days (Ref numbers). We look titles up in Task Ref Library and assignees up in Users+People.</p>
         <div class="row"><select id="impMonth"><option value="">Month…</option></select><select id="impYear"><option value="">Year…</option></select></div>
         <div class="row"><input id="csvFile" type="file" accept=".csv" /></div>
-        <div class="row"><button id="btnParseCsv" class="secondary">Preview tasks</button><button id="btnClearCsv" class="secondary">Clear</button></div>
+        <div class="row"><button id="btnParseCsv" class="secondary">Preview tasks</button><button id="btnClearCsv" class="secondary">Clear</button><button class="secondary" data-route="#/create">Back</button></div>
         <div id="csvInfo" class="hint"></div>
         <div id="csvPreview" class="hidden"><div class="divider"></div><div class="row"><button id="btnCreateCsvTasks">Create all tasks shown</button></div><div id="csvList" class="mini" style="margin-top:8px"></div></div>
       </div>
+    </section>
 
-      <!-- OCR importer (names + numbers only) -->
+    <!-- IMPORT OCR -->
+    <section id="page-import-ocr" class="page hidden">
       <div class="card">
-        <h3>Scan Sheet (Photo)</h3>
-        <p class="hint">We read only names + small numbers from the left grid. Titles/descriptions come from the Reference Library.</p>
+        <h3>Import via Photo (OCR)</h3>
+        <p class="hint">We read only names + small numbers from the left grid.</p>
+        <div class="row"><select id="ocrMonth"><option value="">Month…</option></select><select id="ocrYear"><option value="">Year…</option></select></div>
         <div class="row"><input id="sheetImage" type="file" accept="image/*" /></div>
         <div id="dropZone" class="drop mini">Drag & drop an image here</div>
-        <div class="row"><select id="ocrMonth"><option value="">Month…</option></select><select id="ocrYear"><option value="">Year…</option></select></div>
         <div id="ocrStatus" class="hint"></div>
         <div class="row"><button id="btnShowOcrText" class="ghost mini">Show OCR text</button></div>
         <pre id="ocrText" class="card mini hidden" style="white-space:pre-wrap;max-height:40vh;overflow:auto"></pre>
         <div id="sheetPreview" class="hidden">
           <div class="divider"></div>
-          <div class="row"><button id="btnExtract" class="secondary">Recognize & Preview</button><button id="btnClearPreview" class="secondary">Clear</button></div>
+          <div class="row"><button id="btnExtract" class="secondary">Recognize & Preview</button><button id="btnClearPreview" class="secondary">Clear</button><button class="secondary" data-route="#/create">Back</button></div>
           <div id="previewDiag" class="hint"></div>
           <div id="previewList" class="mini" style="margin-top:8px"></div>
           <div class="row hidden" id="bulkActions"><button id="btnCreateFromPreview">Create selected tasks</button></div>
         </div>
+      </div>
+    </section>
+
+    <!-- TASK REF LIB -->
+    <section id="page-ref-tasks" class="page hidden">
+      <div class="card">
+        <h3>Task Reference Library</h3>
+        <p class="hint">Map each <strong>Ref #</strong> to a title/description. These rarely change.</p>
+        <div id="refsList"></div>
+        <div class="row">
+          <input id="refNum" placeholder="Ref #" />
+          <input id="refTitle" placeholder="Title (e.g., Maintenance Workshop)" />
+          <input id="refDesc" placeholder="Description (optional)" />
+        </div>
+        <div class="row"><button id="btnAddRef" class="secondary">Add / Update Ref</button><button id="btnSaveRefs">Save Library</button><button id="btnLoadRefs" class="secondary">Reload</button><button class="secondary" data-route="#/create">Back</button></div>
+        <div id="refsStatus" class="hint"></div>
+      </div>
+    </section>
+
+    <!-- PEOPLE REF LIB -->
+    <section id="page-ref-people" class="page hidden">
+      <div class="card">
+        <h3>People Reference Library</h3>
+        <p class="hint">Add non-app folks you assign tasks to (exact name match works best).</p>
+        <div id="peopleList"></div>
+        <div class="row">
+          <input id="pName" placeholder="Display name (e.g., Tim)" />
+          <input id="pEmail" placeholder="Email (optional)" />
+          <input id="pNote" placeholder="Note (optional)" />
+        </div>
+        <div class="row"><button id="btnAddPerson" class="secondary">Add / Update Person</button><button id="btnSavePeople">Save People</button><button id="btnLoadPeople" class="secondary">Reload</button><button class="secondary" data-route="#/create">Back</button></div>
+        <div id="peopleStatus" class="hint"></div>
       </div>
     </section>
 
@@ -193,7 +240,7 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
   <!-- Tabs -->
   <div class="tabs hidden" id="tabs">
     <button class="tabBtn" data-route="#/tasks"><span>🗂️</span><span>Tasks</span></button>
-    <button class="tabBtn" data-route="#/create"><span>📄</span><span>Create</span></button>
+    <button class="tabBtn" data-route="#/create"><span>➕</span><span>Create</span></button>
     <button class="tabBtn" data-route="#/profile"><span>👤</span><span>Profile</span></button>
   </div>
 
@@ -227,69 +274,50 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
     const db=getFirestore(app);
     const storage=getStorage(app);
 
-    /* Helpers / state */
+    /* Routing */
     const $=id=>document.getElementById(id);
-    const pages={'#/auth':$('page-auth'),'#/tasks':$('page-tasks'),'#/create':$('page-create'),'#/profile':$('page-profile')};
+    const pages={
+      '#/auth':$('page-auth'),
+      '#/tasks':$('page-tasks'),
+      '#/create':$('page-create-hub'),
+      '#/create/single':$('page-create-single'),
+      '#/create/csv':$('page-import-csv'),
+      '#/create/ocr':$('page-import-ocr'),
+      '#/refs/tasks':$('page-ref-tasks'),
+      '#/refs/people':$('page-ref-people'),
+      '#/profile':$('page-profile')
+    };
     const tabs=$('tabs'), toast=$('toast');
-    function go(route){ if(!currentUser && route!=='#/auth') route='#/auth'; if(currentUser && route==='#/auth') route='#/tasks';
-      Object.entries(pages).forEach(([k,v])=>v.classList.toggle('hidden',k!==route)); tabs.classList.toggle('hidden',!currentUser);
-      document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active',b.dataset.route===route)); if(location.hash!==route) location.hash=route; window.scrollTo({top:0});
+    function go(route){
+      if(!currentUser && route!=='#/auth') route='#/auth';
+      if(currentUser && route==='#/auth') route='#/tasks';
+      Object.entries(pages).forEach(([k,v])=>v.classList.toggle('hidden',k!==route));
+      tabs.classList.toggle('hidden',!currentUser);
+      document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active', b.dataset.route===route));
+      if(location.hash!==route) location.hash=route;
+      window.scrollTo({top:0, behavior:'instant'});
     }
     window.addEventListener('hashchange',()=>go(location.hash||('#/auth')));
     document.querySelectorAll('.tabBtn').forEach(b=>b.onclick=()=>go(b.dataset.route));
+    document.querySelectorAll('[data-route]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.route)));
     function toastMsg(m){ toast.textContent=m; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1200); }
+    function setVh(){ const vh=Math.max(innerHeight, document.documentElement.clientHeight); document.documentElement.style.setProperty('--vh', vh+'px'); } setVh(); addEventListener('resize', setVh);
 
+    /* State */
     let currentUser=null, isMod=false, allTasks=[];
     const usersMap=new Map(); let unsubUsers=null, unsubTasks=null;
 
+    /* Profiles */
     async function ensureUserProfile(user){
       const r=doc(db,'users',user.uid), s=await getDoc(r);
       if(!s.exists()) await setDoc(r,{uid:user.uid,email:user.email||'',name:'',jobTitle:'',photoURL:'',createdAt:serverTimestamp()});
     }
     async function isModerator(uid){ const s=await getDoc(doc(db,'moderators',uid)); return s.exists(); }
+    $('btnSaveProfile').onclick=async()=>{ if(!currentUser) return; await setDoc(doc(db,'users',currentUser.uid),{name:$('profName').value.trim(),jobTitle:$('profJob').value.trim(),photoURL:$('profPhoto').value.trim(),updatedAt:serverTimestamp()},{merge:true}); toastMsg('Profile saved'); };
+    $('btnRefreshProfile').onclick=async()=>{ if(!currentUser) return; const s=await getDoc(doc(db,'users',currentUser.uid)); if(s.exists()){const u=s.data();$('profName').value=u.name||'';$('profJob').value=u.jobTitle||'';$('profPhoto').value=u.photoURL||'';} };
+    $('btnUploadPhoto').onclick=async()=>{ if(!currentUser) return alert('Sign in first.'); const f=$('profPhotoFile').files?.[0]; if(!f) return alert('Pick an image'); const ext=(f.name.split('.').pop()||'jpg').toLowerCase(); const r=sRef(storage,`profilePhotos/${currentUser.uid}.${ext}`); await uploadBytes(r,f); const url=await getDownloadURL(r); $('profPhoto').value=url; await setDoc(doc(db,'users',currentUser.uid),{photoURL:url},{merge:true}); toastMsg('Photo uploaded'); };
 
-    // ------- Reference Library -------
-    // Defaults (fill more when you have time). Mods can edit in UI and save to Firestore.
-    let refLib = {
-      "1": {title:"Maintenance Workshop", desc:"Focus: Permit to Work / Housekeeping"},
-      "2": {title:"Burner Rm 1-12", desc:"Focus: PPE / Recent LFI / Housekeeping"},
-      "3": {title:"Burner Rm 13-22", desc:"Focus: PPE / Recent LFI / Housekeeping"},
-      "4": {title:"Collectors 1-12", desc:"Focus: Hand Safety / LOTO / PPE"},
-      "5": {title:"Collectors 13-22", desc:"Focus: Hand Safety / LOTO / PPE"},
-      "6": {title:"Quality Lab", desc:"Focus: PPE / Recent LFI"},
-      "7": {title:"Warehouse", desc:"Focus: Recent LFI / Housekeeping"},
-      "8": {title:"Compactor Area", desc:"Focus: Housekeeping / Contractor Mgmt"},
-      "9": {title:"Drum Filters/Baghouses", desc:"Focus: Permit to Work / LOTO"},
-      "10": {title:"Engineering Stores - Upstairs Mezz", desc:"Focus: Housekeeping"},
-      "11": {title:"Offices", desc:"Focus: Housekeeping"},
-      "12": {title:"Maintenance Team Member", desc:"Focus: Machine Guarding / Permit to Work"},
-      "13": {title:"Contractors", desc:"Focus: Contractor Mgmt / Permit to Work"}
-    };
-    const REFS_DOC = doc(db,'config','refsLib');
-
-    async function loadRefs(){
-      try{ const s=await getDoc(REFS_DOC); if(s.exists()) refLib = s.data().refs || refLib; renderRefs(); $('refsStatus').textContent='Loaded from cloud.'; }
-      catch{ renderRefs(); $('refsStatus').textContent='Using local defaults.'; }
-    }
-    async function saveRefs(){
-      if(!isMod) return alert('Only moderators can save the library.');
-      await setDoc(REFS_DOC,{refs:refLib,updatedAt:serverTimestamp()});
-      $('refsStatus').textContent='Saved.'; toastMsg('Reference library saved');
-    }
-    function renderRefs(){
-      const wrap=$('refsList'); wrap.innerHTML='';
-      const keys=Object.keys(refLib).sort((a,b)=>parseInt(a)-parseInt(b));
-      keys.forEach(k=>{
-        const row=document.createElement('div'); row.className='card mini';
-        row.innerHTML=`<strong>Ref ${k}</strong>: ${refLib[k].title} <span class="muted">— ${refLib[k].desc||''}</span>`;
-        wrap.appendChild(row);
-      });
-    }
-    $('btnAddRef').onclick=()=>{ const n=$('refNum').value.trim(); const t=$('refTitle').value.trim(); const d=$('refDesc').value.trim();
-      if(!n||!t) return alert('Ref # and Title required'); refLib[n]={title:t,desc:d}; renderRefs(); $('refNum').value=$('refTitle').value=$('refDesc').value=''; };
-    $('btnSaveRefs').onclick=saveRefs; $('btnLoadRefs').onclick=loadRefs;
-
-    // ------- Users & tasks -------
+    /* Users & Tasks */
     function fillAssigneeSelect(sel){
       sel.innerHTML='';
       for (const [uid,u] of Array.from(usersMap.entries()).sort((a,b)=>(a[1].email||'').localeCompare(b[1].email||''))){
@@ -306,9 +334,9 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
       }
       return null;
     }
+    function deriveStatus(t){ const a=(t.assignees||[]).length, c=(t.completedBy||[]).length; if(a===0||c===0) return 'todo'; if(c<a) return 'in_progress'; return 'done'; }
     function endOfMonth(y,m){ return new Date(y, m, 0); }
     function priorityFromDaysLeft(x){ if(x<=10) return 'urgent'; if(x<=20) return 'high'; return 'normal'; }
-    function deriveStatus(t){ const a=(t.assignees||[]).length, c=(t.completedBy||[]).length; if(a===0||c===0) return 'todo'; if(c<a) return 'in_progress'; return 'done'; }
 
     async function watchUsers(){
       if (unsubUsers){unsubUsers();unsubUsers=null;}
@@ -322,7 +350,8 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
     }
     async function watchTasks(){
       if (unsubTasks){unsubTasks();unsubTasks=null;}
-      const qy=(isMod&&$('scopeFilter').value==='all')?query(collection(db,'tasks'),orderBy('createdAt','desc')):query(collection(db,'tasks'),where('assignees','array-contains',currentUser.uid),orderBy('createdAt','desc'));
+      const scope=$('scopeFilter').value;
+      const qy=(isMod&&scope==='all')?query(collection(db,'tasks'),orderBy('createdAt','desc')):query(collection(db,'tasks'),where('assignees','array-contains',currentUser.uid),orderBy('createdAt','desc'));
       unsubTasks=onSnapshot(qy,(snap)=>{ allTasks=snap.docs.map(d=>({id:d.id,...d.data()})); renderTasks(); });
     }
 
@@ -363,7 +392,13 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
         const tdDue=document.createElement('td'); tdDue.setAttribute('data-label','Due'); tdDue.textContent=row.dueDate||'';
 
         const tdAs=document.createElement('td'); tdAs.setAttribute('data-label','Assignees');
-        const avs=document.createElement('div'); avs.className='avatars'; (row.assignees||[]).forEach(uid=>avs.appendChild((()=>{const el=document.createElement('div'); el.className='avatar'; const u=usersMap.get(uid)||{}; el.textContent=(u.name||u.email||'?').charAt(0).toUpperCase(); return el;})())); tdAs.appendChild(avs);
+        const avs=document.createElement('div'); avs.className='avatars';
+        (row.assignees||[]).forEach(uid=>{
+          const u=usersMap.get(uid)||{}; const a=document.createElement('div'); a.className='avatar'; a.title=u.name||u.email||uid; a.textContent=(u.name||u.email||'?').charAt(0).toUpperCase(); avs.appendChild(a);
+        });
+        tdAs.appendChild(avs);
+        // external chips
+        (row.extAssignees||[]).forEach(name=>{ const chip=document.createElement('span'); chip.className='extChip'; chip.textContent=name; tdAs.appendChild(chip); });
 
         const tdDone=document.createElement('td'); tdDone.setAttribute('data-label','Done'); tdDone.textContent=`${(row.completedBy||[]).length}/${(row.assignees||[]).length}`;
 
@@ -388,16 +423,26 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
             <input id="eDue" type="date" value="${row.dueDate||''}">
           </div>
           <div class="row"><select id="eAss" multiple></select></div>
+          <div class="row"><select id="eExtAss" multiple></select></div>
           <div class="row"><button id="eSave">Save</button><button id="eCancel" class="secondary">Cancel</button></div>`;
         tdEdit.appendChild(panel);
 
+        function fillPeopleSelect(sel){
+          sel.innerHTML='';
+          Object.keys(peopleLib).sort((a,b)=>a.localeCompare(b)).forEach(name=>{
+            const o=document.createElement('option'); o.value=name; o.textContent=name; if((row.extAssignees||[]).includes(name)) o.selected=true; sel.appendChild(o);
+          });
+        }
         function openEditor(){
           if(!isMod) return;
           trEdit.classList.remove('hidden');
+          // internal
           const sel=panel.querySelector('#eAss'); sel.innerHTML='';
           for (const [uid,u] of Array.from(usersMap.entries()).sort((a,b)=>(a[1].email||'').localeCompare(b[1].email||''))){
             const o=document.createElement('option'); o.value=uid; const nm=u.name?.trim()||'(no name)'; o.textContent=`${nm}${u.email?' ('+u.email+')':''}`; if((row.assignees||[]).includes(uid)) o.selected=true; sel.appendChild(o);
           }
+          // external
+          fillPeopleSelect(panel.querySelector('#eExtAss'));
           trEdit.scrollIntoView({behavior:'smooth', block:'center'});
         }
         bEdit.onclick=openEditor;
@@ -409,7 +454,8 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
           const ePrio=panel.querySelector('#ePrio').value;
           const eDue=panel.querySelector('#eDue').value||null;
           const newAssignees=Array.from(panel.querySelector('#eAss').selectedOptions).map(o=>o.value);
-          await updateDoc(ref,{title:eTitle,description:eDesc,priority:ePrio,dueDate:eDue,assignees:newAssignees,updatedAt:serverTimestamp()});
+          const newExt=Array.from(panel.querySelector('#eExtAss').selectedOptions).map(o=>o.value);
+          await updateDoc(ref,{title:eTitle,description:eDesc,priority:ePrio,dueDate:eDue,assignees:newAssignees,extAssignees:newExt,updatedAt:serverTimestamp()});
           trEdit.classList.add('hidden'); toastMsg('Task updated');
         }catch(e){ alert('Save failed: '+e.message); }};
 
@@ -423,29 +469,103 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
       });
     }
 
-    // create single task
+    /* Create single task */
     $('btnCreate').onclick=async()=>{
       if(!isMod) return alert('Only moderators can create.');
       const title=$('newTitle').value.trim(); if(!title) return alert('Enter a title');
       const desc=$('newDesc').value.trim(); const prio=$('newPriority').value||'normal'; const due=$('newDue').value||null;
       const ass=Array.from($('newAssignees').selectedOptions).map(o=>o.value);
+      const ext=Array.from($('newExtAssignees').selectedOptions).map(o=>o.value);
       const assignees=ass.length?ass:[currentUser.uid];
-      await addDoc(collection(db,'tasks'),{title,description:desc,priority:prio,dueDate:due,assignees,completedBy:[],createdBy:currentUser.uid,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
-      $('newTitle').value=''; $('newDesc').value=''; $('newPriority').value='normal'; $('newDue').value=''; for(const o of $('newAssignees').options)o.selected=false;
+      await addDoc(collection(db,'tasks'),{title,description:desc,priority:prio,dueDate:due,assignees,extAssignees:ext,completedBy:[],createdBy:currentUser.uid,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+      $('newTitle').value=''; $('newDesc').value=''; $('newPriority').value='normal'; $('newDue').value='';
+      for(const o of $('newAssignees').options)o.selected=false; for(const o of $('newExtAssignees').options)o.selected=false;
       toastMsg('Task created');
     };
 
-    // Month/Year selects
+    /* Reference Libraries */
+    // Defaults you can expand
+    let refLib = {
+      "1": {title:"Maintenance Workshop", desc:"Focus: Permit to Work / Housekeeping"},
+      "2": {title:"Burner Rm 1-12", desc:"Focus: PPE / Recent LFI / Housekeeping"},
+      "3": {title:"Burner Rm 13-22", desc:"Focus: PPE / Recent LFI / Housekeeping"},
+      "4": {title:"Collectors 1-12", desc:"Focus: Hand Safety / LOTO / PPE"},
+      "5": {title:"Collectors 13-22", desc:"Focus: Hand Safety / LOTO / PPE"},
+      "6": {title:"Quality Lab", desc:"Focus: PPE / Recent LFI"},
+      "7": {title:"Warehouse", desc:"Focus: Recent LFI / Housekeeping"},
+      "8": {title:"Compactor Area", desc:"Focus: Housekeeping / Contractor Mgmt"},
+      "9": {title:"Drum Filters/Baghouses", desc:"Focus: Permit to Work / LOTO"},
+      "10": {title:"Engineering Stores - Upstairs Mezz", desc:"Focus: Housekeeping"},
+      "11": {title:"Offices", desc:"Focus: Housekeeping"},
+      "12": {title:"Maintenance Team Member", desc:"Focus: Machine Guarding / Permit to Work"},
+      "13": {title:"Contractors", desc:"Focus: Contractor Mgmt / Permit to Work"}
+    };
+    let peopleLib = {
+      // "Tim": {email:"", note:""},
+    };
+    const REFS_DOC = doc(db,'config','refsLib');
+    const PEOPLE_DOC = doc(db,'config','peopleLib');
+
+    // Task Refs UI
+    function renderRefs(){
+      const wrap=$('refsList'); wrap.innerHTML='';
+      const keys=Object.keys(refLib).sort((a,b)=>parseInt(a)-parseInt(b));
+      keys.forEach(k=>{
+        const row=document.createElement('div'); row.className='card mini';
+        row.innerHTML=`<strong>Ref ${k}</strong>: ${refLib[k].title} <span class="muted">— ${refLib[k].desc||''}</span>`;
+        wrap.appendChild(row);
+      });
+    }
+    $('btnAddRef').onclick=()=>{ const n=$('refNum').value.trim(); const t=$('refTitle').value.trim(); const d=$('refDesc').value.trim();
+      if(!n||!t) return alert('Ref # and Title required'); refLib[n]={title:t,desc:d}; renderRefs(); $('refNum').value=$('refTitle').value=$('refDesc').value=''; };
+    $('btnSaveRefs').onclick=async()=>{ if(!isMod) return alert('Only moderators can save the library.'); await setDoc(REFS_DOC,{refs:refLib,updatedAt:serverTimestamp()}); $('refsStatus').textContent='Saved.'; toastMsg('Reference library saved'); };
+    $('btnLoadRefs').onclick=async()=>{ try{ const s=await getDoc(REFS_DOC); if(s.exists()) refLib = s.data().refs || refLib; $('refsStatus').textContent='Loaded from cloud.'; }catch{ $('refsStatus').textContent='Using local defaults.'; } renderRefs(); };
+
+    // People UI
+    function renderPeople(){
+      const wrap=$('peopleList'); wrap.innerHTML='';
+      const names=Object.keys(peopleLib).sort((a,b)=>a.localeCompare(b));
+      names.forEach(name=>{
+        const p=peopleLib[name]||{};
+        const row=document.createElement('div'); row.className='card mini';
+        row.innerHTML=`<strong>${name}</strong> <span class="muted">${p.email||''}${p.note?(' — '+p.note):''}</span>`;
+        wrap.appendChild(row);
+      });
+      // refresh selects that use people
+      fillPeopleSelect($('newExtAssignees'));
+    }
+    function fillPeopleSelect(sel){
+      if(!sel) return;
+      sel.innerHTML='';
+      Object.keys(peopleLib).sort((a,b)=>a.localeCompare(b)).forEach(name=>{
+        const o=document.createElement('option'); o.value=name; o.textContent=name; sel.appendChild(o);
+      });
+    }
+    $('btnAddPerson').onclick=()=>{ const name=$('pName').value.trim(); if(!name) return alert('Name required');
+      const email=$('pEmail').value.trim(); const note=$('pNote').value.trim(); peopleLib[name]={email, note}; renderPeople(); $('pName').value=$('pEmail').value=$('pNote').value=''; };
+    $('btnSavePeople').onclick=async()=>{ if(!isMod) return alert('Only moderators can save people.'); await setDoc(PEOPLE_DOC,{people:peopleLib,updatedAt:serverTimestamp()}); $('peopleStatus').textContent='Saved.'; toastMsg('People library saved'); };
+    $('btnLoadPeople').onclick=async()=>{ try{ const s=await getDoc(PEOPLE_DOC); if(s.exists()) peopleLib = s.data().people || peopleLib; $('peopleStatus').textContent='Loaded from cloud.'; }catch{ $('peopleStatus').textContent='Using local list.'; } renderPeople(); };
+
+    /* Month/Year selects */
     function fillMonthYear(selM, selY){
       selM.innerHTML='<option value="">Month…</option>';
       "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(' ').forEach((m,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=m;selM.appendChild(o);});
       selY.innerHTML='<option value="">Year…</option>';
       const y0=new Date().getFullYear(); for(let y=y0-1;y<=y0+2;y++){const o=document.createElement('option');o.value=y;o.textContent=y;selY.appendChild(o);}
     }
-    fillMonthYear($('impMonth'),$('impYear')); fillMonthYear($('ocrMonth'),$('ocrYear'));
+    fillMonthYear($('impMonth'),$('impYear'));
+    fillMonthYear($('ocrMonth'),$('ocrYear'));
 
-    // CSV (name + day refs only)
+    /* CSV Import (names + day refs only; titles via refLib, people via libs) */
     function parseCsvRaw(file){ return new Promise((resolve,reject)=> Papa.parse(file,{header:false,skipEmptyLines:true,complete:res=>resolve(res.data),error:reject})); }
+    function resolveExternal(name){
+      const target=(name||'').toLowerCase().trim();
+      for(const nm of Object.keys(peopleLib)){
+        const low=nm.toLowerCase();
+        if(low===target || low.includes(target) || target.includes(low)) return nm;
+      }
+      return null;
+    }
     function buildTasksFromCsv(rows, year, month){
       const COL_NAME=0, COL_DAY_START=2, COL_DAY_END=32;
       const last=endOfMonth(year, month); const dueStr=last.toISOString().slice(0,10);
@@ -453,12 +573,14 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
       const tasks=[];
       for(const r of rows){
         const name=r[COL_NAME]; if(!name) continue;
-        const assUid=nameToUid(String(name));
+        const uid=nameToUid(String(name));
+        const extName = uid? null : resolveExternal(String(name));
         for(let d=1; d<=31; d++){
           const col=COL_DAY_START+(d-1); const v=r[col]; if(!v) continue;
-          const ref=String(parseInt(v,10)); if(!refLib[ref]) continue; // unknown ref, skip
+          const ref=String(parseInt(v,10)); if(!refLib[ref]) continue;
           const {title,desc}=refLib[ref];
-          tasks.push({title, description:desc, dueDate:dueStr, priority:basePriority, ref, scheduledDay:d, assignees:assUid?[assUid]:[], unresolvedAssignee:assUid?null:String(name)});
+          tasks.push({title, description:desc, dueDate:dueStr, priority:basePriority, ref, scheduledDay:d,
+                      assignees:uid?[uid]:[], extAssignees: extName?[extName]:[], unresolvedAssignee: (!uid && !extName)?String(name):null});
         }
       }
       return tasks;
@@ -476,7 +598,13 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
         if(!tasks.length){ $('csvInfo').innerHTML='<span class="dangerText">No tasks found.</span>'; return; }
         $('csvInfo').innerHTML=`<span class="ok">Previewing ${tasks.length} task(s).</span>`;
         const list=$('csvList'); list.innerHTML='';
-        tasks.forEach(t=>{ const d=document.createElement('div'); d.className='card mini'; d.innerHTML=`<div><strong>${t.title}</strong> — ${t.description||''}</div><div>Ref ${t.ref}, Day ${t.scheduledDay}, Due ${t.dueDate}, Priority ${t.priority}</div><div>${t.assignees.length?'✔ matched user':('<span class="dangerText">⚠ not matched: '+t.unresolvedAssignee+'</span>')}</div>`; list.appendChild(d); });
+        tasks.forEach(t=>{ const d=document.createElement('div'); d.className='card mini';
+          const who = t.assignees.length?'✔ internal'
+                      : t.extAssignees?.length? ('✔ external: '+t.extAssignees.join(', '))
+                      : ('<span class="dangerText">⚠ not matched: '+t.unresolvedAssignee+'</span>');
+          d.innerHTML=`<div><strong>${t.title}</strong> — ${t.description||''}</div><div>Ref ${t.ref}, Day ${t.scheduledDay}, Due ${t.dueDate}, Priority ${t.priority}</div><div>${who}</div>`;
+          list.appendChild(d);
+        });
         $('csvPreview').classList.remove('hidden');
         $('btnCreateCsvTasks').dataset.payload=JSON.stringify(tasks);
       }catch(e){ $('csvInfo').innerHTML=`<span class="dangerText">Parse failed: ${e.message}</span>`; }
@@ -486,13 +614,13 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
       const tasks=JSON.parse(raw); let created=0;
       for(const t of tasks){
         const ass=t.assignees.length?t.assignees:[currentUser.uid];
-        await addDoc(collection(db,'tasks'),{title:t.title,description:t.description,priority:t.priority,dueDate:t.dueDate,assignees:ass,completedBy:[],ref:t.ref,scheduledDay:t.scheduledDay,createdBy:currentUser.uid,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+        await addDoc(collection(db,'tasks'),{title:t.title,description:t.description,priority:t.priority,dueDate:t.dueDate,assignees:ass,extAssignees:t.extAssignees||[],completedBy:[],ref:t.ref,scheduledDay:t.scheduledDay,createdBy:currentUser.uid,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
         created++;
       }
       toastMsg(`Created ${created} task(s)`); $('btnClearCsv').click();
     };
 
-    // --------- OCR (names + numbers only) ----------
+    /* OCR (names + numbers only) */
     let ocrImageBlob=null;
     $('sheetImage').onchange=()=>{const f=$('sheetImage').files?.[0]; if(!f) return; ocrImageBlob=f; $('sheetPreview').classList.remove('hidden'); $('ocrStatus').textContent=`Selected: ${f.name}`; $('previewList').innerHTML=''; $('bulkActions').classList.add('hidden');};
     ;['dragenter','dragover'].forEach(evt=>$('dropZone').addEventListener(evt,e=>{e.preventDefault(); $('dropZone').classList.add('drag');}));
@@ -506,7 +634,6 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
       const lines=text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
       const assignments=[];
       for(const ln of lines){
-        // “Name ... numbers”
         const m=ln.match(/^([A-Za-z][A-Za-z .()'-]+?)\s+(.+)$/);
         if(!m) continue;
         const name=m[1].trim();
@@ -530,24 +657,29 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
         const tasks=[];
         for(const a of assignments){
           const uid=nameToUid(a.name);
+          const extName = uid? null : resolveExternal(a.name);
           let dayIdx=1;
           for(const ref of a.refs){
-            if(!refLib[ref]) continue; // unknown ref, skip
+            if(!refLib[ref]) continue;
             const {title,desc}=refLib[ref];
-            tasks.push({title, description:desc, dueDate:dueStr, priority:basePriority, ref, scheduledDay:dayIdx++, assignees:uid?[uid]:[], unresolvedAssignee:uid?null:a.name});
+            tasks.push({title, description:desc, dueDate:dueStr, priority:basePriority, ref, scheduledDay:dayIdx++,
+                        assignees:uid?[uid]:[], extAssignees: extName?[extName]:[], unresolvedAssignee:(!uid&&!extName)?a.name:null});
           }
         }
 
-        $('previewDiag').textContent=`Lines:${lineCount}  refs-known:${Object.keys(refLib).length}  people:${assignments.length}`;
+        $('previewDiag').textContent=`Lines:${lineCount}  refs-known:${Object.keys(refLib).length}  people-known:${Object.keys(peopleLib).length}  rows:${assignments.length}`;
         if(!tasks.length){ $('ocrStatus').innerHTML='<span class="dangerText">No tasks parsed. Ensure the left grid is sharp and close, or use CSV.</span>'; return; }
         $('ocrStatus').innerHTML=`<span class="ok">Parsed ${tasks.length} candidate task(s).</span>`;
 
         const list=$('previewList'); list.innerHTML='';
         tasks.forEach((t,i)=>{ const d=document.createElement('div'); d.className='card mini';
+          const who = t.assignees.length?'✔ internal'
+                      : t.extAssignees?.length? ('✔ external: '+t.extAssignees.join(', '))
+                      : ('<span class="dangerText">⚠ not matched: '+t.unresolvedAssignee+'</span>');
           d.innerHTML=`<label class="mini"><input type="checkbox" class="pv-check" data-i="${i}" checked> Create</label>
           <div><strong>${t.title}</strong> — ${t.description||''}</div>
           <div>Ref ${t.ref}, Day ${t.scheduledDay}, Due ${t.dueDate}, Priority ${t.priority}</div>
-          <div>${t.assignees.length?'✔ matched user':('<span class="dangerText">⚠ not matched: '+t.unresolvedAssignee+'</span>')}</div>`;
+          <div>${who}</div>`;
           list.appendChild(d);
         });
         $('bulkActions').classList.remove('hidden');
@@ -559,7 +691,7 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
             if(!chk.checked) continue;
             const i=parseInt(chk.dataset.i,10); const t=tasks[i];
             const ass=t.assignees.length?t.assignees:[currentUser.uid];
-            await addDoc(collection(db,'tasks'),{title:t.title,description:t.description,priority:t.priority,dueDate:t.dueDate,assignees:ass,completedBy:[],ref:t.ref,scheduledDay:t.scheduledDay,createdBy:currentUser.uid,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+            await addDoc(collection(db,'tasks'),{title:t.title,description:t.description,priority:t.priority,dueDate:t.dueDate,assignees:ass,extAssignees:t.extAssignees||[],completedBy:[],ref:t.ref,scheduledDay:t.scheduledDay,createdBy:currentUser.uid,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
             created++;
           }
           toastMsg(`Created ${created} task(s)`); $('btnClearPreview').click();
@@ -567,21 +699,24 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
       }catch(e){ $('ocrStatus').innerHTML=`<span class="dangerText">OCR failed: ${e.message}</span>`; }
     };
 
-    // profile
-    $('btnSaveProfile').onclick=async()=>{ if(!currentUser) return; await setDoc(doc(db,'users',currentUser.uid),{name:$('profName').value.trim(),jobTitle:$('profJob').value.trim(),photoURL:$('profPhoto').value.trim(),updatedAt:serverTimestamp()},{merge:true}); toastMsg('Profile saved'); };
-    $('btnRefreshProfile').onclick=async()=>{ if(!currentUser) return; const s=await getDoc(doc(db,'users',currentUser.uid)); if(s.exists()){const u=s.data();$('profName').value=u.name||'';$('profJob').value=u.jobTitle||'';$('profPhoto').value=u.photoURL||'';} };
-    $('btnUploadPhoto').onclick=async()=>{ if(!currentUser) return alert('Sign in first.'); const f=$('profPhotoFile').files?.[0]; if(!f) return alert('Pick an image'); const ext=(f.name.split('.').pop()||'jpg').toLowerCase(); const r=sRef(storage,`profilePhotos/${currentUser.uid}.${ext}`); await uploadBytes(r,f); const url=await getDownloadURL(r); $('profPhoto').value=url; await setDoc(doc(db,'users',currentUser.uid),{photoURL:url},{merge:true}); toastMsg('Photo uploaded'); };
-
-    // filters
+    /* Filters */
     ['searchInput','statusFilter','priorityFilter'].forEach(id=>$(id).addEventListener('input',renderTasks));
     $('scopeFilter').addEventListener('change',watchTasks);
 
-    // auth
+    /* Auth */
     $('btnSignIn').onclick=async()=>{ try{ await signInWithEmailAndPassword(auth,$('email').value,$('password').value);}catch(e){ alert(e.message); } };
     $('btnSignUp').onclick=async()=>{ try{ await createUserWithEmailAndPassword(auth,$('email').value,$('password').value);}catch(e){ alert(e.message); } };
     $('btnSignOut').onclick=async()=>{ await signOut(auth); };
 
-    async function startData(){ await loadRefs(); await watchUsers(); $('scopeFilter').classList.toggle('hidden',!isMod); $('scopeFilter').value='mine'; await watchTasks(); }
+    /* Start */
+    async function startData(){
+      // Load libraries
+      try{ const s=await getDoc(REFS_DOC); if(s.exists()) refLib = s.data().refs || refLib; }catch{}
+      try{ const s=await getDoc(PEOPLE_DOC); if(s.exists()) peopleLib = s.data().people || peopleLib; }catch{}
+      renderRefs(); renderPeople(); fillAssigneeSelect($('newAssignees')); fillPeopleSelect($('newExtAssignees'));
+      $('scopeFilter').classList.toggle('hidden',!isMod); $('scopeFilter').value='mine';
+      await watchUsers(); await watchTasks();
+    }
 
     onAuthStateChanged(auth, async (user)=>{
       currentUser=user||null;
@@ -596,7 +731,8 @@ tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
         $('btnSignOut').classList.add('hidden');
         $('authStatus').textContent='Not signed in';
         if (unsubTasks){unsubTasks();unsubTasks=null;} if (unsubUsers){unsubUsers();unsubUsers=null;}
-        allTasks=[]; $('taskTbody').innerHTML=''; go('#/auth');
+        allTasks=[]; $('taskTbody').innerHTML='';
+        go('#/auth');
       }
     });
 
