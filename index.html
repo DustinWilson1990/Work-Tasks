@@ -6,9 +6,8 @@
   <title>Work Tasks</title>
   <style>
     :root{
-      /* Alkegen brand */
-      --brand:#002D62;      /* dark blue */
-      --accent:#53A65C;     /* green */
+      --brand:#002D62;      /* Alkegen dark blue */
+      --accent:#53A65C;     /* Alkegen green */
 
       --bg:#0e1116; --card:#151a24; --text:#eef2f7; --muted:#a3adbd; --border:#273045;
       --shadow:0 12px 40px rgba(0,0,0,.5);
@@ -22,19 +21,28 @@
     html,body{height:100%}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
 
-    .navTop{position:sticky;top:0;z-index:20;backdrop-filter:blur(6px);
-      background:linear-gradient(to bottom,color-mix(in srgb,var(--bg) 92%,transparent),transparent);
-      border-bottom:2px solid color-mix(in srgb,var(--brand) 40%, var(--border))}
-    .navTopInner{max-width:1100px;margin:0 auto;padding:8px 14px;display:flex;align-items:center;gap:12px}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:700}
-    /* Poppier logo badge */
-    .logoImg{
-      width:28px;height:28px;border-radius:6px;object-fit:contain;
-      background:#fff;padding:3px;border:2px solid var(--accent);
-      box-shadow:0 0 4px rgba(0,0,0,0.2);
+    /* ===== Top brand bar with big logo ===== */
+    .brandBar{
+      position:sticky;top:0;z-index:20;
+      background:linear-gradient(180deg, color-mix(in srgb, var(--brand) 30%, var(--bg)) 0%, var(--bg) 60%);
+      border-bottom:2px solid color-mix(in srgb,var(--brand) 40%, var(--border));
+      padding:10px 14px 8px;
     }
-    .brandText{font-size:14px}
-    .grow{flex:1}
+    .brandWrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center}
+    .brandLogo{
+      background:#fff;border:2px solid var(--accent);
+      box-shadow:0 3px 12px rgba(0,0,0,.25);
+      border-radius:12px;padding:8px;
+    }
+    .brandLogo img{
+      display:block;height:48px; /* big on mobile */
+      width:auto;object-fit:contain;
+    }
+    @media (min-width: 760px){
+      .brandLogo img{ height:64px; } /* bigger on desktop */
+    }
+
+    .topMeta{max-width:1100px;margin:6px auto 0;display:flex;gap:12px;align-items:center;justify-content:space-between;padding:0 14px}
     .muted{color:var(--muted);font-size:12px}
     .topBtn{font-size:14px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text)}
 
@@ -48,6 +56,7 @@
     button,input,select,textarea{font-size:16px;padding:11px 12px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text)}
     button{background:var(--btn);color:var(--btn-text);border:none}
     button.secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
+    button.ghost{background:transparent;border:1px dashed var(--border);color:var(--muted)}
     button:active{transform:translateY(1px)}
     textarea{min-height:84px}
     .hint{font-size:12px;color:var(--muted)}
@@ -77,7 +86,6 @@
       td{border:none;padding:10px 0}
       td[data-label]::before{content:attr(data-label) " ";font-size:12px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.02em}
       .tableWrap{border:none}
-      .brandText{display:none}
     }
 
     /* Bottom tabs with greener active state */
@@ -105,14 +113,13 @@
   </style>
 </head>
 <body>
-  <div class="navTop">
-    <div class="navTopInner">
-      <div class="brand">
-        <img id="logoImg" class="logoImg" alt="Alkegen" />
-        <span class="brandText">Work Tasks</span>
-      </div>
+  <!-- Big logo header -->
+  <div class="brandBar">
+    <div class="brandWrap">
+      <div class="brandLogo"><img id="logoImg" alt="Alkegen" /></div>
+    </div>
+    <div class="topMeta">
       <div id="authStatus" class="muted">Not signed in</div>
-      <div class="grow"></div>
       <button id="btnSignOut" class="topBtn hidden">Sign out</button>
     </div>
   </div>
@@ -199,7 +206,7 @@
       <!-- CSV importer -->
       <div class="card">
         <h3>Import from Spreadsheet (Single CSV)</h3>
-        <p class="hint">Export the whole sheet as CSV. Expected: A=Name, B=Count(ignored), C…AG=Days (Refs), AH=Area, AI=Ref, AJ/AK ignored.</p>
+        <p class="hint">Export the whole sheet as CSV. Expected: A=Name, B=Count(ignored), C…AG=Days (Refs), AH=Area, AI=Ref.</p>
         <div class="row">
           <select id="impMonth"><option value="">Month…</option></select>
           <select id="impYear"><option value="">Year…</option></select>
@@ -228,12 +235,20 @@
         </div>
         <div id="dropZone" class="drop mini">Drag & drop an image here</div>
         <div id="ocrStatus" class="hint"></div>
+
+        <!-- OCR Debug Toggle -->
+        <div class="row">
+          <button id="btnShowOcrText" class="ghost mini">Show OCR text</button>
+        </div>
+        <pre id="ocrText" class="card mini hidden" style="white-space:pre-wrap;max-height:40vh;overflow:auto"></pre>
+
         <div id="sheetPreview" class="hidden">
           <div class="divider"></div>
           <div class="row">
             <button id="btnExtract" class="secondary">Recognize & Preview</button>
             <button id="btnClearPreview" class="secondary">Clear</button>
           </div>
+          <div id="previewDiag" class="hint"></div>
           <div id="previewList" class="mini" style="margin-top:8px"></div>
           <div class="row hidden" id="bulkActions">
             <button id="btnCreateFromPreview">Create selected tasks</button>
@@ -246,7 +261,6 @@
     <section id="page-profile" class="page hidden">
       <div class="card">
         <h3>Your Profile</h3>
-        <!-- Avatar preview -->
         <div class="row" style="align-items:center">
           <div class="avatar big"><img id="profAvatarImg" alt="" /></div>
           <div class="hint">This photo shows on your tasks for teammates.</div>
@@ -292,8 +306,7 @@
 
     /* Logo */
     const LOGO_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrdeEzoxxBXtrF9equxIeFP61GsGUqShoIzTWqNmdasXfrYwtDg2Az7Q&s=10";
-    const logoImg = document.getElementById('logoImg');
-    if (LOGO_URL) logoImg.src = LOGO_URL;
+    document.getElementById('logoImg').src = LOGO_URL;
 
     /* Firebase */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -388,7 +401,7 @@
 
     /* DOM refs */
     const emailEl=$('email'), passEl=$('password'), btnSignIn=$('btnSignIn'), btnSignUp=$('btnSignUp');
-    const btnToggleFilters=$('btnToggleFilters'), filtersCard=$('filtersCard');
+    const btnToggleFilters=$('btnToggleFilters');
     const searchInput=$('searchInput'), statusFilter=$('statusFilter'), priorityFilter=$('priorityFilter'), scopeFilter=$('scopeFilter'), taskTbody=$('taskTbody');
     const newTitle=$('newTitle'), newDesc=$('newDesc'), newPriority=$('newPriority'), newDue=$('newDue'), newAssignees=$('newAssignees'), modHint=$('modHint');
 
@@ -400,6 +413,7 @@
     const sheetImage=$('sheetImage'), dropZone=$('dropZone');
     const ocrStatus=$('ocrStatus'), sheetPreview=$('sheetPreview'), btnExtract=$('btnExtract'), btnClearPreview=$('btnClearPreview');
     const previewList=$('previewList'), bulkActions=$('bulkActions'), btnCreateFromPreview=$('btnCreateFromPreview');
+    const btnShowOcrText=$('btnShowOcrText'), ocrText=$('ocrText'), previewDiag=$('previewDiag');
 
     // Profile photo upload refs
     const profPhoto=$('profPhoto'), profPhotoFile=$('profPhotoFile'), btnUploadPhoto=$('btnUploadPhoto');
@@ -416,7 +430,7 @@
     populateMonthYear();
 
     /* Filters */
-    btnToggleFilters.onclick=()=>{ filtersCard.classList.toggle('open'); btnToggleFilters.textContent=filtersCard.classList.contains('open')?'Hide':'Show'; };
+    btnToggleFilters.onclick=()=>{ const c=document.getElementById('filtersCard'); c.classList.toggle('open'); btnToggleFilters.textContent=c.classList.contains('open')?'Hide':'Show'; };
     [searchInput,statusFilter,priorityFilter].forEach(el=>{el.addEventListener('input',renderTasks);el.addEventListener('change',renderTasks);});
     scopeFilter.addEventListener('change',()=>watchTasks());
 
@@ -450,12 +464,6 @@
         const da=a.dueDate||'', db=b.dueDate||''; if(da!==db) return (da||'9999-99-99').localeCompare(db||'9999-99-99'); return (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0);});
       return arr;
     }
-    function avatarInitials(uid){
-      const u=usersMap.get(uid);
-      const src=(u?.name?.trim()||u?.email||'??').split('@')[0];
-      const parts=src.replace(/[^a-zA-Z0-9 ]/g,' ').trim().split(/\s+/);
-      return (parts[0]||'?').charAt(0).toUpperCase()+(parts[1]||'').charAt(0).toUpperCase();
-    }
     function renderTasks(){
       const rows=applyFilters(allTasks); taskTbody.innerHTML='';
       rows.forEach(row=>{
@@ -479,14 +487,7 @@
         const tdDue=document.createElement('td'); tdDue.setAttribute('data-label','Due'); tdDue.textContent=row.dueDate||'';
 
         const tdAs=document.createElement('td'); tdAs.setAttribute('data-label','Assignees');
-        const avs=document.createElement('div'); avs.className='avatars';
-        const list=row.assignees||[]; const maxShow=4;
-        list.slice(0,maxShow).forEach(uid=>{
-          const u=usersMap.get(uid)||{};
-          const av=document.createElement('div'); av.className='avatar';
-          if(u.photoURL) av.innerHTML = `<img src="${u.photoURL}" alt="">`; else av.textContent = avatarInitials(uid);
-          avs.appendChild(av);
-        });
+        const avs=document.createElement('div'); avs.className='avatars'; const list=row.assignees||[]; const maxShow=4; list.slice(0,maxShow).forEach(uid=>avs.appendChild(avatarEl(uid)));
         if(list.length>maxShow){const more=document.createElement('div'); more.className='avatar more'; more.textContent=`+${list.length-maxShow}`; avs.appendChild(more);} tdAs.appendChild(avs);
 
         const tdDone=document.createElement('td'); tdDone.setAttribute('data-label','Done'); tdDone.textContent=`${(row.completedBy||[]).length}/${(row.assignees||[]).length}`;
@@ -589,8 +590,8 @@
       }
       return tasks;
     }
-    btnClearCsv.onclick=()=>{ csvOne.value=''; csvList.innerHTML=''; csvPreview.classList.add('hidden'); csvInfo.textContent=''; };
-    btnParseSingleCsv.onclick=async()=>{
+    $('btnClearCsv').onclick=()=>{ csvOne.value=''; csvList.innerHTML=''; csvPreview.classList.add('hidden'); csvInfo.textContent=''; };
+    $('btnParseSingleCsv').onclick=async()=>{
       if(!isMod) return alert('Only moderators can import.');
       const m=parseInt(impMonth.value,10), y=parseInt(impYear.value,10);
       if(!m||!y) return alert('Pick Month and Year');
@@ -611,9 +612,9 @@
         btnCreateCsvTasks.dataset.payload = JSON.stringify(tasks);
       }catch(e){ csvInfo.innerHTML=`<span class="danger">Parse failed: ${e.message}</span>`; }
     };
-    btnCreateCsvTasks.onclick=async()=>{
+    $('btnCreateCsvTasks').onclick=async()=>{
       if(!isMod) return alert('Only moderators can create.');
-      const raw=btnCreateCsvTasks.dataset.payload; if(!raw) return;
+      const raw=$('btnCreateCsvTasks').dataset.payload; if(!raw) return;
       const tasks=JSON.parse(raw);
       let created=0, skipped=0;
       for(const t of tasks){
@@ -627,47 +628,99 @@
       csvPreview.classList.add('hidden'); csvList.innerHTML=''; csvInfo.textContent=''; csvOne.value='';
     };
 
-    /* OCR (camera or gallery + drag&drop) */
+    /* ===== OCR v2 (camera or gallery + drag&drop) ===== */
     let ocrImageBlob = null;
-    sheetImage.onchange = () => { const f = sheetImage.files?.[0]; if(!f) return; ocrImageBlob=f; sheetPreview.classList.remove('hidden'); ocrStatus.textContent=`Selected: ${f.name}`; previewList.innerHTML=''; bulkActions.classList.add('hidden'); };
+    sheetImage.onchange = () => { const f = sheetImage.files?.[0]; if(!f) return; ocrImageBlob=f; sheetPreview.classList.remove('hidden'); ocrStatus.textContent=`Selected: ${f.name}`; previewList.innerHTML=''; $('bulkActions').classList.add('hidden'); };
     ;['dragenter','dragover'].forEach(evt=>dropZone.addEventListener(evt,e=>{e.preventDefault(); dropZone.classList.add('drag');}));
     ;['dragleave','drop'].forEach(evt=>dropZone.addEventListener(evt,e=>{e.preventDefault(); dropZone.classList.remove('drag');}));
-    dropZone.addEventListener('drop', (e)=>{ const f=e.dataTransfer.files?.[0]; if(f && f.type.startsWith('image/')){ ocrImageBlob=f; sheetPreview.classList.remove('hidden'); ocrStatus.textContent=`Selected: ${f.name}`; previewList.innerHTML=''; bulkActions.classList.add('hidden'); } });
+    dropZone.addEventListener('drop', (e)=>{ const f=e.dataTransfer.files?.[0]; if(f && f.type.startsWith('image/')){ ocrImageBlob=f; sheetPreview.classList.remove('hidden'); ocrStatus.textContent=`Selected: ${f.name}`; previewList.innerHTML=''; $('bulkActions').classList.add('hidden'); } });
+
+    function normalizeDigits(s){
+      // Replace common OCR mistakes when characters appear as standalone digits
+      return s
+        .replace(/\bO\b/g,'0')
+        .replace(/\bS\b/g,'5')
+        .replace(/\bI\b/g,'1')
+        .replace(/\bl\b/g,'1')
+        .replace(/[–—]/g,'-');
+    }
 
     function parseOcrToTasks(rawText, year, month){
-      const lines = rawText.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+      const cleaned = normalizeDigits(rawText);
+      const lines = cleaned.split(/\r?\n/).map(s=>s.replace(/\s+$/,'').trim()).filter(Boolean);
+
+      // Build Ref Library (right table)
+      // Accept: "Maintenance Workshop – focus on Permit to work ... Ref 7"
+      // Also accept: "7 - Maintenance Workshop ..." or "Ref:7 Maintenance Workshop"
       const lib = new Map();
       for(const ln of lines){
-        const m = ln.match(/^(.*?)(?:\s*[–-]\s*focus on\s*(.*?))?\s+ref[:\s]*([0-9]+)\b/i);
+        let m = ln.match(/^(.*?)(?:\s*-\s*focus on\s*(.*?))?\s+\bref[:\s]*([0-9]{1,2})\b/i);
         if(m){
-          const area=m[1].trim(); const focus=m[2]?.trim(); const ref=String(m[3]).trim();
-          const {title, desc} = splitAreaFocus(focus ? `${area} – focus on ${focus}` : area);
-          lib.set(ref,{title,desc});
+          const area=m[1].trim(), focus=m[2]?.trim(), ref=String(m[3]).trim();
+          const title = area.replace(/\s*[-–]\s*$/,'').trim();
+          const desc = focus ? ('Focus: '+focus) : '';
+          if(title) lib.set(ref,{title,desc});
+          continue;
+        }
+        // "7 - Maintenance Workshop - focus on ..."
+        m = ln.match(/^\b([0-9]{1,2})\b\s*[-:]\s*(.*)$/);
+        if(m){
+          const ref=String(m[1]).trim();
+          let area = m[2].trim(); let desc='';
+          const f = area.match(/^(.*?)[-–]\s*focus on\s*(.*)$/i);
+          if(f){ area=f[1].trim(); desc='Focus: '+f[2].trim(); }
+          if(area) lib.set(ref,{title:area, desc});
+          continue;
         }
       }
+
+      // Assignments (left grid): "John Doe 1 3 7" or "John Doe: 1,3,7"
+      const assignments = [];
+      const nameRow = /^([A-Za-z][A-Za-z .()'-]+)\s*[:\-]?\s*(.*)$/;
+      for(const ln of lines){
+        const n = ln.match(nameRow);
+        if(!n) continue;
+        const name = n[1].trim();
+        const rest = n[2].trim();
+        // Must have at least one number 1..31 in rest
+        const refs = (rest.match(/\b([0-9]{1,2})\b/g)||[]);
+        if(refs.length===0) continue;
+        assignments.push({name, refs: refs.map(r=>String(parseInt(r,10)))});
+      }
+
+      // Build tasks
       const last=endOfMonth(year, month); const dueStr=last.toISOString().slice(0,10);
       const today=new Date(); const daysLeft=Math.ceil((last - new Date(today.getFullYear(), today.getMonth(), today.getDate()))/86400000);
       const basePriority=priorityFromDaysLeft(daysLeft);
 
       const tasks=[];
-      for(const ln of lines){
-        const nameMatch = ln.match(/^([A-Za-z][A-Za-z .()'-]+)\s+(.*)$/);
-        if(!nameMatch) continue;
-        const name = nameMatch[1].trim();
-        const rest = nameMatch[2];
-        const refs = rest.match(/\b([0-9]{1,2})\b/g) || [];
-        if(refs.length===0) continue;
-        const assUid = nameToUid(name);
-        refs.forEach((ref, idx)=>{
-          if(!lib.has(ref)) return;
-          const {title, desc}=lib.get(ref);
-          tasks.push({title, description:desc, dueDate:dueStr, priority:basePriority, scheduledDay: idx+1, ref, assignees: assUid ? [assUid] : [], unresolvedAssignee: assUid? null : name});
-        });
+      for(const a of assignments){
+        const assUid = nameToUid(a.name);
+        let dayIndex=1;
+        for(const ref of a.refs){
+          if(!lib.has(ref)) continue; // skip unknown ref
+          const {title, desc} = lib.get(ref);
+          tasks.push({
+            title, description:desc, dueDate:dueStr, priority:basePriority,
+            scheduledDay: dayIndex++, ref,
+            assignees: assUid ? [assUid] : [],
+            unresolvedAssignee: assUid ? null : a.name
+          });
+        }
       }
-      return tasks;
+
+      return { tasks, counts:{ lines:lines.length, refs:lib.size, names:assignments.length } };
     }
 
-    $('btnClearPreview').onclick = () => { sheetImage.value = ''; ocrImageBlob = null; sheetPreview.classList.add('hidden'); ocrStatus.textContent = ''; previewList.innerHTML = ''; $('bulkActions').classList.add('hidden'); };
+    $('btnShowOcrText').onclick = ()=>{ ocrText.classList.toggle('hidden'); };
+
+    $('btnClearPreview').onclick = () => {
+      sheetImage.value = ''; ocrImageBlob = null; sheetPreview.classList.add('hidden');
+      ocrStatus.textContent = ''; previewList.innerHTML = ''; $('bulkActions').classList.add('hidden');
+      ocrText.textContent = '';
+      previewDiag.textContent = '';
+    };
+
     $('btnExtract').onclick = async () => {
       if (!isMod) return alert('Only moderators can use Scan Sheet.');
       if (!ocrImageBlob) return alert('Choose an image first.');
@@ -675,12 +728,33 @@
       if(!m||!y) return alert('Pick Month and Year (used for due date)');
       if (!window.Tesseract) return alert('OCR library not loaded yet.');
 
-      ocrStatus.textContent = 'Reading image…'; previewList.innerHTML=''; $('bulkActions').classList.add('hidden');
+      ocrStatus.textContent = 'Reading image…'; previewList.innerHTML=''; $('bulkActions').classList.add('hidden'); previewDiag.textContent='';
       try{
-        const { data } = await Tesseract.recognize(ocrImageBlob, 'eng', { logger: m => { if (m.status) ocrStatus.textContent = `${m.status} ${m.progress?Math.round(m.progress*100)+'%':''}`; } });
-        const tasks = parseOcrToTasks(data.text||'', y, m);
-        if(!tasks.length){ ocrStatus.innerHTML = '<span class="danger">Could not parse tasks from photo. Try CSV for accuracy.</span>'; return; }
-        ocrStatus.innerHTML = `<span class="ok">Parsed ${tasks.length} candidate task(s). Review below.</span>`;
+        const { data } = await Tesseract.recognize(ocrImageBlob, 'eng', { logger: p => { if (p.status) ocrStatus.textContent = `${p.status} ${p.progress?Math.round(p.progress*100)+'%':''}`; } });
+        const text = data.text||'';
+        ocrText.textContent = text; // show raw OCR when toggled
+        const { tasks, counts } = parseOcrToTasks(text, y, m);
+
+        if (!counts.refs) {
+          ocrStatus.innerHTML = '<span class="danger">Could not find any "Ref" lines (right table). Make sure the photo includes the tasks table.</span>';
+          previewDiag.textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
+          return;
+        }
+        if (!counts.names) {
+          ocrStatus.innerHTML = '<span class="danger">Found the tasks table, but no name rows with numbers. Try framing the left grid clearly, or use CSV.</span>';
+          previewDiag.textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
+          // Still allow creating unassigned tasks once we know refs (not implemented here to avoid duplicates).
+          return;
+        }
+        if(!tasks.length){
+          ocrStatus.innerHTML = '<span class="danger">Parsed refs and names, but could not match any numbers to known refs. Check photo clarity or try CSV.</span>';
+          previewDiag.textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
+          return;
+        }
+
+        ocrStatus.innerHTML = `<span class="ok">Parsed ${tasks.length} candidate task(s).</span>`;
+        previewDiag.textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
+
         tasks.forEach((t,i)=>{
           const row=document.createElement('div'); row.className='card mini';
           const who = t.assignees.length ? '✔ matched user' : `<span class="danger">⚠ not matched: ${t.unresolvedAssignee}</span>`;
@@ -715,7 +789,6 @@
       const f = $('profPhotoFile').files?.[0];
       if(!f) return alert('Choose an image first.');
       try{
-        // Store under profilePhotos/{uid}.{ext}
         const ext = (f.name.split('.').pop()||'jpg').toLowerCase().slice(0,5);
         const r = sRef(storage, `profilePhotos/${currentUser.uid}.${ext}`);
         await uploadBytes(r, f);
