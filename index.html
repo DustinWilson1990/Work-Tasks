@@ -1,94 +1,90 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Work Tasks</title>
-  <style>
-    :root{
-      --brand:#002D62; --accent:#53A65C;
-      --bg:#0e1116; --card:#151a24; --text:#eef2f7; --muted:#a3adbd; --border:#273045;
-      --shadow:0 12px 40px rgba(0,0,0,.5);
-      --btn:var(--brand); --btn-text:#fff; --pill:#1d2433; --danger:#ff6b6b; --ok:#34d399;
-      --tabbg:#0e1116; --tab-border:#1a2131; --vh:100svh;
-    }
-    @media (prefers-color-scheme: light){
-      :root{ --bg:#f6f7fb; --card:#fff; --text:#111; --muted:#667085; --border:#e6e8ef; --shadow:0 10px 30px rgba(0,0,0,.08); --tabbg:#fff; --tab-border:#e6e8ef; }
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Work Tasks</title>
+<style>
+:root{
+  --brand:#002D62; --accent:#53A65C;
+  --bg:#0e1116; --card:#151a24; --text:#eef2f7; --muted:#a3adbd; --border:#273045;
+  --shadow:0 12px 40px rgba(0,0,0,.5);
+  --btn:var(--brand); --btn-text:#fff; --pill:#1d2433; --danger:#ff6b6b; --ok:#34d399;
+  --tabbg:#0e1116; --tab-border:#1a2131; --vh:100svh;
+}
+@media (prefers-color-scheme: light){
+  :root{ --bg:#f6f7fb; --card:#fff; --text:#111; --muted:#667085; --border:#e6e8ef; --shadow:0 10px 30px rgba(0,0,0,.08); --tabbg:#fff; --tab-border:#e6e8ef; }
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
 
-    /* Brand header with big logo */
-    .brandBar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg, color-mix(in srgb, var(--brand) 30%, var(--bg)) 0%, var(--bg) 60%);
-      border-bottom:2px solid color-mix(in srgb,var(--brand) 40%, var(--border));padding:10px 14px 8px;}
-    .brandWrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center}
-    .brandLogo{background:#fff;border:2px solid var(--accent);box-shadow:0 3px 12px rgba(0,0,0,.25);border-radius:12px;padding:8px}
-    .brandLogo img{display:block;height:48px;width:auto;object-fit:contain}
-    @media (min-width:760px){.brandLogo img{height:64px}}
-    .topMeta{max-width:1100px;margin:6px auto 0;display:flex;gap:12px;align-items:center;justify-content:space-between;padding:0 14px}
-    .muted{color:var(--muted);font-size:12px}
-    .topBtn{font-size:14px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text)}
+/* brand header */
+.brandBar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg, color-mix(in srgb, var(--brand) 30%, var(--bg)) 0%, var(--bg) 60%);
+  border-bottom:2px solid color-mix(in srgb,var(--brand) 40%, var(--border));padding:10px 14px 8px;}
+.brandWrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center}
+.brandLogo{background:#fff;border:2px solid var(--accent);box-shadow:0 3px 12px rgba(0,0,0,.25);border-radius:12px;padding:8px}
+.brandLogo img{display:block;height:56px;width:auto;object-fit:contain}
+.topMeta{max-width:1100px;margin:6px auto 0;display:flex;gap:12px;align-items:center;justify-content:space-between;padding:0 14px}
+.muted{color:var(--muted);font-size:12px}
+.topBtn{font-size:14px;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text)}
 
-    h3{margin:0 0 10px}
-    h3::after{content:"";display:block;width:36px;height:3px;background:var(--accent);border-radius:2px;margin-top:6px}
+h3{margin:0 0 10px}
+h3::after{content:"";display:block;width:36px;height:3px;background:var(--accent);border-radius:2px;margin-top:6px}
 
-    .app{max-width:1100px;margin:0 auto;padding:14px;padding-bottom:120px;min-height:calc(var(--vh) - 50px)}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:14px;margin:12px 0}
-    .row{display:flex;gap:8px;flex-wrap:wrap}
-    .row>*{flex:1;min-width:150px}
-    button,input,select,textarea{font-size:16px;padding:11px 12px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text)}
-    button{background:var(--btn);color:var(--btn-text);border:none}
-    button.secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
-    button.ghost{background:transparent;border:1px dashed var(--border);color:var(--muted)}
-    button:active{transform:translateY(1px)}
-    textarea{min-height:84px}
-    .hint{font-size:12px;color:var(--muted)}
-    .mini{font-size:12px}
-    .divider{height:1px;background:var(--border);margin:8px 0}
+.app{max-width:1100px;margin:0 auto;padding:14px;padding-bottom:120px;min-height:calc(var(--vh) - 50px)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:14px;margin:12px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row>*{flex:1;min-width:150px}
+button,input,select,textarea{font-size:16px;padding:11px 12px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text)}
+button{background:var(--btn);color:var(--btn-text);border:none}
+button.secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
+button.danger{background:transparent;border:1px solid var(--danger);color:var(--danger)}
+button.ghost{background:transparent;border:1px dashed var(--border);color:var(--muted)}
+button:active{transform:translateY(1px)}
+textarea{min-height:84px}
+.hint{font-size:12px;color:var(--muted)}
+.mini{font-size:12px}
+.divider{height:1px;background:var(--border);margin:8px 0}
 
-    .tableWrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px}
-    table{width:100%;border-collapse:collapse}
-    th,td{text-align:left;border-bottom:1px solid var(--border);padding:10px 8px;vertical-align:top}
-    th{font-size:12px;text-transform:uppercase;letter-spacing:.02em;color:var(--muted)}
-    tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
-    .pill{font-size:12px;padding:4px 8px;border-radius:999px;background:var(--pill);display:inline-block}
-    .pill.high{background:color-mix(in srgb,var(--pill) 70%, #f0a000)}
-    .pill.urgent{background:color-mix(in srgb,var(--pill) 70%, #d33)}
-    .statusDot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;translate:0 2px}
-    .st-todo{background:#a0a8b8}.st-inprog{background:#f0a000}.st-done{background:#2ecc71}
-    .avatars{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-    .avatar{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--pill);color:var(--text);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;overflow:hidden}
-    .avatar.big{width:72px;height:72px;border-radius:50%}
-    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
-    .avatar.more{background:transparent;border:none;font-weight:600}
+.tableWrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;border-bottom:1px solid var(--border);padding:10px 8px;vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.02em;color:var(--muted)}
+tr:hover td{background:color-mix(in srgb,var(--card) 92%, transparent)}
+.pill{font-size:12px;padding:4px 8px;border-radius:999px;background:var(--pill);display:inline-block}
+.pill.high{background:color-mix(in srgb,var(--pill) 70%, #f0a000)}
+.pill.urgent{background:color-mix(in srgb,var(--pill) 70%, #d33)}
+.statusDot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;translate:0 2px}
+.st-todo{background:#a0a8b8}.st-inprog{background:#f0a000}.st-done{background:#2ecc71}
+.avatars{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.avatar{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--pill);color:var(--text);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
 
-    @media (max-width:760px){
-      th{display:none}
-      table, thead, tbody, tr, td{display:block;width:100%}
-      tr{border-bottom:1px solid var(--border)}
-      td{border:none;padding:10px 0}
-      td[data-label]::before{content:attr(data-label) " ";font-size:12px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.02em}
-      .tableWrap{border:none}
-    }
+@media (max-width:760px){
+  th{display:none}
+  table, thead, tbody, tr, td{display:block;width:100%}
+  tr{border-bottom:1px solid var(--border)}
+  td{border:none;padding:10px 0}
+  td[data-label]::before{content:attr(data-label) " ";font-size:12px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.02em}
+  .tableWrap{border:none}
+}
 
-    /* Bottom tabs */
-    .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--tabbg);
-      border-top:2px solid color-mix(in srgb,var(--brand) 40%, var(--tab-border));
-      padding:8px 10px  calc(8px + env(safe-area-inset-bottom));
-      display:flex;gap:10px;justify-content:space-around;box-shadow:0 -6px 20px rgba(0,0,0,.15)}
-    .tabBtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:12px}
-    .tabBtn.active{background:color-mix(in srgb, var(--accent) 16%, transparent);border-color:var(--accent);color:var(--accent);outline:2px solid color-mix(in srgb,var(--accent) 35%, transparent)}
+/* tabs */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--tabbg);
+  border-top:2px solid color-mix(in srgb,var(--brand) 40%, var(--tab-border));
+  padding:8px 10px  calc(8px + env(safe-area-inset-bottom));
+  display:flex;gap:10px;justify-content:space-around;box-shadow:0 -6px 20px rgba(0,0,0,.15)}
+.tabBtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:12px}
+.tabBtn.active{background:color-mix(in srgb, var(--accent) 16%, transparent);border-color:var(--accent);color:var(--accent);outline:2px solid color-mix(in srgb,var(--accent) 35%, transparent)}
 
-    .toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:10px 14px;z-index:40;display:none}
-    .toast.show{display:block}
-    #debug{position:fixed;bottom:140px;left:8px;right:8px;background:#000a;color:#fff;padding:8px;border-radius:8px;font:12px monospace;z-index:50;display:none;max-height:40vh;overflow:auto}
-    .hidden{display:none!important}
-    .ok{color:var(--ok)} .danger{color:var(--danger)}
-
-    .drop{border:2px dashed color-mix(in srgb,var(--brand) 40%, var(--border)); border-radius:12px; padding:16px; text-align:center}
-    .drop.drag{background:color-mix(in srgb,var(--brand) 10%, transparent)}
-  </style>
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:10px 14px;z-index:40;display:none}
+.toast.show{display:block}
+.hidden{display:none!important}
+.ok{color:var(--ok)} .dangerText{color:var(--danger)}
+.drop{border:2px dashed color-mix(in srgb,var(--brand) 40%, var(--border)); border-radius:12px; padding:16px; text-align:center}
+.drop.drag{background:color-mix(in srgb,var(--brand) 10%, transparent)}
+</style>
 </head>
 <body>
   <div class="brandBar">
@@ -97,7 +93,7 @@
   </div>
 
   <div class="app">
-    <!-- Auth -->
+    <!-- AUTH -->
     <section id="page-auth" class="page">
       <div class="card">
         <h3>Sign in / Sign up</h3>
@@ -107,17 +103,14 @@
       </div>
     </section>
 
-    <!-- Tasks -->
+    <!-- TASKS -->
     <section id="page-tasks" class="page hidden">
-      <div class="card" id="filtersCard">
-        <div class="filtersHeader"><strong>Filters</strong><button id="btnToggleFilters" class="secondary mini">Show</button></div>
-        <div class="filtersBody" id="filtersBody">
-          <div class="row">
-            <input id="searchInput" placeholder="Search title…" />
-            <select id="statusFilter"><option value="all">Status: All</option><option value="open">Status: Open</option><option value="done">Status: Done</option></select>
-            <select id="priorityFilter"><option value="all">Priority: All</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select>
-            <select id="scopeFilter" class="hidden"><option value="mine">Show: Mine</option><option value="all">Show: All</option></select>
-          </div>
+      <div class="card">
+        <div class="row">
+          <input id="searchInput" placeholder="Search title…" />
+          <select id="statusFilter"><option value="all">Status: All</option><option value="open">Status: Open</option><option value="done">Status: Done</option></select>
+          <select id="priorityFilter"><option value="all">Priority: All</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select>
+          <select id="scopeFilter" class="hidden"><option value="mine">Show: Mine</option><option value="all">Show: All</option></select>
         </div>
       </div>
       <div class="card tableWrap">
@@ -128,7 +121,7 @@
       </div>
     </section>
 
-    <!-- Create -->
+    <!-- CREATE -->
     <section id="page-create" class="page hidden">
       <div class="card">
         <h3>Create Task</h3>
@@ -137,26 +130,41 @@
         <div class="row"><select id="newPriority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select><input id="newDue" type="date" /></div>
         <div class="row"><select id="newAssignees" multiple><option value="">Pick assignees…</option></select></div>
         <div class="row"><button id="btnCreate">Create task</button></div>
-        <p id="modHint" class="hint hidden danger">Only moderators can create tasks.</p>
+        <p id="modHint" class="hint hidden dangerText">Only moderators can create tasks.</p>
+      </div>
+
+      <!-- Reference Library (editable) -->
+      <div class="card">
+        <h3>Reference Library</h3>
+        <p class="hint">Map each <strong>Ref #</strong> to a task title and optional description (“Focus on …”). These rarely change.</p>
+        <div id="refsList"></div>
+        <div class="row">
+          <input id="refNum" placeholder="Ref #" />
+          <input id="refTitle" placeholder="Title (e.g., Maintenance Workshop)" />
+          <input id="refDesc" placeholder="Description (optional, e.g., Focus on Permit to Work/Housekeeping)" />
+        </div>
+        <div class="row"><button id="btnAddRef" class="secondary">Add / Update Ref</button><button id="btnSaveRefs">Save Library</button><button id="btnLoadRefs" class="secondary">Reload</button></div>
+        <div id="refsStatus" class="hint"></div>
       </div>
 
       <!-- CSV importer -->
       <div class="card">
-        <h3>Import from Spreadsheet (Single CSV)</h3>
-        <p class="hint">Export the whole sheet as CSV. Expected: A=Name, B=Count(ignored), C…AG=Days (Refs), AH=Area, AI=Ref.</p>
+        <h3>Import from Spreadsheet (CSV)</h3>
+        <p class="hint">Single CSV export of the sheet. A=Name, C…AG=Days (Ref numbers). We look refs up in the library above.</p>
         <div class="row"><select id="impMonth"><option value="">Month…</option></select><select id="impYear"><option value="">Year…</option></select></div>
-        <div class="row"><input id="csvOne" type="file" accept=".csv" /></div>
-        <div class="row"><button id="btnParseSingleCsv" class="secondary">Preview tasks</button><button id="btnClearCsv" class="secondary">Clear</button></div>
+        <div class="row"><input id="csvFile" type="file" accept=".csv" /></div>
+        <div class="row"><button id="btnParseCsv" class="secondary">Preview tasks</button><button id="btnClearCsv" class="secondary">Clear</button></div>
         <div id="csvInfo" class="hint"></div>
         <div id="csvPreview" class="hidden"><div class="divider"></div><div class="row"><button id="btnCreateCsvTasks">Create all tasks shown</button></div><div id="csvList" class="mini" style="margin-top:8px"></div></div>
       </div>
 
-      <!-- OCR importer -->
+      <!-- OCR importer (names + numbers only) -->
       <div class="card">
         <h3>Scan Sheet (Photo)</h3>
-        <p class="hint">Choose from camera or gallery. Drag & drop works on desktop. CSV is still most accurate.</p>
+        <p class="hint">We read only names + small numbers from the left grid. Titles/descriptions come from the Reference Library.</p>
         <div class="row"><input id="sheetImage" type="file" accept="image/*" /></div>
         <div id="dropZone" class="drop mini">Drag & drop an image here</div>
+        <div class="row"><select id="ocrMonth"><option value="">Month…</option></select><select id="ocrYear"><option value="">Year…</option></select></div>
         <div id="ocrStatus" class="hint"></div>
         <div class="row"><button id="btnShowOcrText" class="ghost mini">Show OCR text</button></div>
         <pre id="ocrText" class="card mini hidden" style="white-space:pre-wrap;max-height:40vh;overflow:auto"></pre>
@@ -170,14 +178,13 @@
       </div>
     </section>
 
-    <!-- Profile -->
+    <!-- PROFILE -->
     <section id="page-profile" class="page hidden">
       <div class="card">
         <h3>Your Profile</h3>
-        <div class="row" style="align-items:center"><div class="avatar big"><img id="profAvatarImg" alt="" /></div><div class="hint">This photo shows on your tasks for teammates.</div></div>
-        <div class="row"><input id="profName" placeholder="Your name" /><input id="profJob" placeholder="Job title (e.g., Supervisor)" /></div>
+        <div class="row"><input id="profName" placeholder="Your name" /><input id="profJob" placeholder="Job title" /></div>
         <input id="profPhoto" placeholder="Photo URL (optional)" />
-        <div class="row"><input id="profPhotoFile" type="file" accept="image/*" /><button id="btnUploadPhoto" class="secondary">Upload photo</button></div>
+        <div class="row"><input id="profPhotoFile" type="file" accept="image/*" /><button id="btnUploadPhoto" class="secondary">Upload</button></div>
         <div class="row"><button id="btnSaveProfile">Save Profile</button><button class="secondary" id="btnRefreshProfile">Refresh</button></div>
       </div>
     </section>
@@ -191,28 +198,20 @@
   </div>
 
   <div id="toast" class="toast">Saved</div>
-  <div id="debug"></div>
 
   <!-- Libs -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
 
   <script type="module">
-    /* Debug surface */
-    window.addEventListener('error', e => {
-      const box = document.getElementById('debug');
-      box.style.display='block';
-      box.textContent += 'Error: ' + (e.message || e.error?.message) + '\\n';
-    });
-
     /* Logo */
-    const LOGO_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrdeEzoxxBXtrF9equxIeFP61GsGUqShoIzTWqNmdasXfrYwtDg2Az7Q&s=10";
-    document.getElementById('logoImg').src = LOGO_URL;
+    const LOGO_URL="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrdeEzoxxBXtrF9equxIeFP61GsGUqShoIzTWqNmdasXfrYwtDg2Az7Q&s=10";
+    document.getElementById('logoImg').src=LOGO_URL;
 
     /* Firebase */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, query, where, orderBy, onSnapshot, doc, updateDoc, addDoc, serverTimestamp, getDoc, setDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, orderBy, onSnapshot, doc, updateDoc, addDoc, setDoc, getDoc, serverTimestamp, arrayUnion, arrayRemove, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
     const firebaseConfig = {
@@ -223,66 +222,80 @@
       messagingSenderId: "1032855791471",
       appId: "1:1032855791471:web:1680e88857174c60d26a9a"
     };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db   = getFirestore(app);
-    const storage = getStorage(app);
+    const app=initializeApp(firebaseConfig);
+    const auth=getAuth(app);
+    const db=getFirestore(app);
+    const storage=getStorage(app);
 
-    /* Shortcuts & routing */
-    const $ = (id)=>document.getElementById(id);
-    const toast = $('toast');
+    /* Helpers / state */
+    const $=id=>document.getElementById(id);
     const pages={'#/auth':$('page-auth'),'#/tasks':$('page-tasks'),'#/create':$('page-create'),'#/profile':$('page-profile')};
-    const tabs=$('tabs'), authStatus=$('authStatus'), btnSignOut=$('btnSignOut');
-
-    function toastMsg(m='Saved'){ toast.textContent=m; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1200); }
-    function routeActive(route){ document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active', b.dataset.route===route)); }
-    function go(route){
-      if (!currentUser && route!=='#/auth') route = '#/auth';
-      if (currentUser && route==='#/auth') route = '#/tasks';
-      Object.entries(pages).forEach(([k,el])=> el.classList.toggle('hidden', k!==route));
-      tabs.classList.toggle('hidden', !currentUser);
-      routeActive(route);
-      if (location.hash !== route) location.hash = route;
-      window.scrollTo({top:0});
+    const tabs=$('tabs'), toast=$('toast');
+    function go(route){ if(!currentUser && route!=='#/auth') route='#/auth'; if(currentUser && route==='#/auth') route='#/tasks';
+      Object.entries(pages).forEach(([k,v])=>v.classList.toggle('hidden',k!==route)); tabs.classList.toggle('hidden',!currentUser);
+      document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active',b.dataset.route===route)); if(location.hash!==route) location.hash=route; window.scrollTo({top:0});
     }
-    window.addEventListener('hashchange', ()=>go(location.hash||('#/auth')));
-    document.querySelectorAll('.tabBtn').forEach(b=> b.onclick=()=> go(b.dataset.route));
-    function setVh(){ const vh=Math.max(innerHeight, document.documentElement.clientHeight); document.documentElement.style.setProperty('--vh', vh+'px'); } setVh(); addEventListener('resize', setVh);
+    window.addEventListener('hashchange',()=>go(location.hash||('#/auth')));
+    document.querySelectorAll('.tabBtn').forEach(b=>b.onclick=()=>go(b.dataset.route));
+    function toastMsg(m){ toast.textContent=m; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1200); }
 
-    /* State */
     let currentUser=null, isMod=false, allTasks=[];
     const usersMap=new Map(); let unsubUsers=null, unsubTasks=null;
 
-    /* Helpers */
     async function ensureUserProfile(user){
       const r=doc(db,'users',user.uid), s=await getDoc(r);
       if(!s.exists()) await setDoc(r,{uid:user.uid,email:user.email||'',name:'',jobTitle:'',photoURL:'',createdAt:serverTimestamp()});
     }
     async function isModerator(uid){ const s=await getDoc(doc(db,'moderators',uid)); return s.exists(); }
-    async function loadMyProfile(uid){
-      const s=await getDoc(doc(db,'users',uid));
-      if(s.exists()){
-        const u=s.data();
-        $('profName').value=u.name||'';
-        $('profJob').value=u.jobTitle||'';
-        $('profPhoto').value=u.photoURL||'';
-        $('profAvatarImg').src = u.photoURL || '';
+
+    // ------- Reference Library -------
+    // Defaults (fill more when you have time). Mods can edit in UI and save to Firestore.
+    let refLib = {
+      "1": {title:"Maintenance Workshop", desc:"Focus: Permit to Work / Housekeeping"},
+      "2": {title:"Burner Rm 1-12", desc:"Focus: PPE / Recent LFI / Housekeeping"},
+      "3": {title:"Burner Rm 13-22", desc:"Focus: PPE / Recent LFI / Housekeeping"},
+      "4": {title:"Collectors 1-12", desc:"Focus: Hand Safety / LOTO / PPE"},
+      "5": {title:"Collectors 13-22", desc:"Focus: Hand Safety / LOTO / PPE"},
+      "6": {title:"Quality Lab", desc:"Focus: PPE / Recent LFI"},
+      "7": {title:"Warehouse", desc:"Focus: Recent LFI / Housekeeping"},
+      "8": {title:"Compactor Area", desc:"Focus: Housekeeping / Contractor Mgmt"},
+      "9": {title:"Drum Filters/Baghouses", desc:"Focus: Permit to Work / LOTO"},
+      "10": {title:"Engineering Stores - Upstairs Mezz", desc:"Focus: Housekeeping"},
+      "11": {title:"Offices", desc:"Focus: Housekeeping"},
+      "12": {title:"Maintenance Team Member", desc:"Focus: Machine Guarding / Permit to Work"},
+      "13": {title:"Contractors", desc:"Focus: Contractor Mgmt / Permit to Work"}
+    };
+    const REFS_DOC = doc(db,'config','refsLib');
+
+    async function loadRefs(){
+      try{ const s=await getDoc(REFS_DOC); if(s.exists()) refLib = s.data().refs || refLib; renderRefs(); $('refsStatus').textContent='Loaded from cloud.'; }
+      catch{ renderRefs(); $('refsStatus').textContent='Using local defaults.'; }
+    }
+    async function saveRefs(){
+      if(!isMod) return alert('Only moderators can save the library.');
+      await setDoc(REFS_DOC,{refs:refLib,updatedAt:serverTimestamp()});
+      $('refsStatus').textContent='Saved.'; toastMsg('Reference library saved');
+    }
+    function renderRefs(){
+      const wrap=$('refsList'); wrap.innerHTML='';
+      const keys=Object.keys(refLib).sort((a,b)=>parseInt(a)-parseInt(b));
+      keys.forEach(k=>{
+        const row=document.createElement('div'); row.className='card mini';
+        row.innerHTML=`<strong>Ref ${k}</strong>: ${refLib[k].title} <span class="muted">— ${refLib[k].desc||''}</span>`;
+        wrap.appendChild(row);
+      });
+    }
+    $('btnAddRef').onclick=()=>{ const n=$('refNum').value.trim(); const t=$('refTitle').value.trim(); const d=$('refDesc').value.trim();
+      if(!n||!t) return alert('Ref # and Title required'); refLib[n]={title:t,desc:d}; renderRefs(); $('refNum').value=$('refTitle').value=$('refDesc').value=''; };
+    $('btnSaveRefs').onclick=saveRefs; $('btnLoadRefs').onclick=loadRefs;
+
+    // ------- Users & tasks -------
+    function fillAssigneeSelect(sel){
+      sel.innerHTML='';
+      for (const [uid,u] of Array.from(usersMap.entries()).sort((a,b)=>(a[1].email||'').localeCompare(b[1].email||''))){
+        const o=document.createElement('option'); o.value=uid; const nm=u.name?.trim()||'(no name)'; o.textContent=`${nm}${u.email?' ('+u.email+')':''}`; sel.appendChild(o);
       }
     }
-    async function saveMyProfile(uid){
-      await setDoc(doc(db,'users',uid),{
-        name:$('profName').value.trim(),
-        jobTitle:$('profJob').value.trim(),
-        photoURL:$('profPhoto').value.trim(),
-        updatedAt:serverTimestamp()
-      },{merge:true});
-      $('profAvatarImg').src = $('profPhoto').value.trim() || '';
-    }
-    function uidToInitials(uid){ const u=usersMap.get(uid); const src=(u?.name?.trim()||u?.email||'??').split('@')[0]; const parts=src.replace(/[^a-zA-Z0-9 ]/g,' ').trim().split(/\s+/); return (parts[0]||'?').charAt(0).toUpperCase()+(parts[1]||'').charAt(0).toUpperCase(); }
-    function avatarEl(uid){ const u=usersMap.get(uid)||{}; const el=document.createElement('div'); el.className='avatar'; if(u.photoURL) el.innerHTML=`<img src="${u.photoURL}" alt="">`; else el.textContent=uidToInitials(uid); return el; }
-    function deriveStatus(t){ const a=(t.assignees||[]).length, c=(t.completedBy||[]).length; if(a===0||c===0) return 'todo'; if(c<a) return 'in_progress'; return 'done'; }
-    function endOfMonth(year, month1to12){ return new Date(year, month1to12, 0); }
-    function priorityFromDaysLeft(daysLeft){ if(daysLeft<=10) return 'urgent'; if(daysLeft<=20) return 'high'; return 'normal'; }
     function nameToUid(name){
       const target=(name||'').toLowerCase().trim().replace(/\s+\(.*?\)\s*$/,'');
       for(const [uid,u] of usersMap.entries()){
@@ -293,67 +306,28 @@
       }
       return null;
     }
-    function fillAssigneeSelect(sel){
-      sel.innerHTML='';
-      for (const [uid,u] of Array.from(usersMap.entries()).sort((a,b)=>(a[1].email||'').localeCompare(b[1].email||''))){
-        const o=document.createElement('option'); o.value=uid; const nm=u.name?.trim()||'(no name)'; o.textContent=`${nm}${u.email?' ('+u.email+')':''}`; sel.appendChild(o);
-      }
-    }
+    function endOfMonth(y,m){ return new Date(y, m, 0); }
+    function priorityFromDaysLeft(x){ if(x<=10) return 'urgent'; if(x<=20) return 'high'; return 'normal'; }
+    function deriveStatus(t){ const a=(t.assignees||[]).length, c=(t.completedBy||[]).length; if(a===0||c===0) return 'todo'; if(c<a) return 'in_progress'; return 'done'; }
 
-    /* DOM refs */
-    const emailEl=$('email'), passEl=$('password'), btnSignIn=$('btnSignIn'), btnSignUp=$('btnSignUp');
-    const btnToggleFilters=$('btnToggleFilters');
-    const searchInput=$('searchInput'), statusFilter=$('statusFilter'), priorityFilter=$('priorityFilter'), scopeFilter=$('scopeFilter'), taskTbody=$('taskTbody');
-    const newTitle=$('newTitle'), newDesc=$('newDesc'), newPriority=$('newPriority'), newDue=$('newDue'), newAssignees=$('newAssignees'), modHint=$('modHint');
-
-    // CSV / Month-Year
-    const impMonth=$('impMonth'), impYear=$('impYear'), csvOne=$('csvOne'), btnParseSingleCsv=$('btnParseSingleCsv'), btnClearCsv=$('btnClearCsv');
-    const csvInfo=$('csvInfo'), csvPreview=$('csvPreview'), csvList=$('csvList'), btnCreateCsvTasks=$('btnCreateCsvTasks');
-
-    // OCR
-    const sheetImage=$('sheetImage'), dropZone=$('dropZone');
-    const ocrStatus=$('ocrStatus'), sheetPreview=$('sheetPreview'), btnExtract=$('btnExtract'), btnClearPreview=$('btnClearPreview');
-    const previewList=$('previewList'), bulkActions=$('bulkActions');
-    const btnShowOcrText=$('btnShowOcrText'), ocrText=$('ocrText'), previewDiag=$('previewDiag');
-
-    // Profile photo
-    const profPhoto=$('profPhoto'), profPhotoFile=$('profPhotoFile'), btnUploadPhoto=$('btnUploadPhoto');
-
-    // Populate Month/Year
-    (function(){
-      impMonth.innerHTML = '<option value="">Month…</option>';
-      const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-      months.forEach((m,i)=>{ const o=document.createElement('option'); o.value=(i+1); o.textContent=m; impMonth.appendChild(o); });
-      impYear.innerHTML = '<option value="">Year…</option>';
-      const yNow=new Date().getFullYear();
-      for(let y=yNow-1;y<=yNow+2;y++){ const o=document.createElement('option'); o.value=y; o.textContent=y; impYear.appendChild(o); }
-    })();
-
-    /* Filters */
-    btnToggleFilters.onclick=()=>{ const c=document.getElementById('filtersCard'); c.classList.toggle('open'); btnToggleFilters.textContent=c.classList.contains('open')?'Hide':'Show'; };
-    [searchInput,statusFilter,priorityFilter].forEach(el=>{el.addEventListener('input',renderTasks);el.addEventListener('change',renderTasks);});
-    scopeFilter.addEventListener('change',()=>watchTasks());
-
-    /* Live data */
     async function watchUsers(){
       if (unsubUsers){unsubUsers();unsubUsers=null;}
       const qUsers=query(collection(db,'users'),orderBy('email'));
       unsubUsers=onSnapshot(qUsers,(snap)=>{
         usersMap.clear();
         snap.forEach(d=>{const u=d.data(); usersMap.set(u.uid,{name:u.name||'',email:u.email||'',photoURL:u.photoURL||''});});
-        fillAssigneeSelect(newAssignees);
+        fillAssigneeSelect($('newAssignees'));
         renderTasks();
       });
     }
     async function watchTasks(){
       if (unsubTasks){unsubTasks();unsubTasks=null;}
-      const qy=(isMod&&scopeFilter.value==='all')?query(collection(db,'tasks'),orderBy('createdAt','desc')):query(collection(db,'tasks'),where('assignees','array-contains',currentUser.uid),orderBy('createdAt','desc'));
+      const qy=(isMod&&$('scopeFilter').value==='all')?query(collection(db,'tasks'),orderBy('createdAt','desc')):query(collection(db,'tasks'),where('assignees','array-contains',currentUser.uid),orderBy('createdAt','desc'));
       unsubTasks=onSnapshot(qy,(snap)=>{ allTasks=snap.docs.map(d=>({id:d.id,...d.data()})); renderTasks(); });
     }
 
-    /* Render tasks */
     function applyFilters(items){
-      const q=(searchInput.value||'').toLowerCase(), fStatus=statusFilter.value, fPrio=priorityFilter.value, scope=isMod?scopeFilter.value:'mine';
+      const q=($('searchInput').value||'').toLowerCase(), fStatus=$('statusFilter').value, fPrio=$('priorityFilter').value, scope=isMod?$('scopeFilter').value:'mine';
       let arr=items.slice();
       if(scope==='mine'&&currentUser) arr=arr.filter(t=>(t.assignees||[]).includes(currentUser.uid));
       if(q) arr=arr.filter(t=>(t.title||'').toLowerCase().includes(q));
@@ -364,15 +338,17 @@
         const da=a.dueDate||'', db=b.dueDate||''; if(da!==db) return (da||'9999-99-99').localeCompare(db||'9999-99-99'); return (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0);});
       return arr;
     }
+
     function renderTasks(){
-      const rows=applyFilters(allTasks); taskTbody.innerHTML='';
+      const tbody=$('taskTbody'); tbody.innerHTML='';
+      const rows=applyFilters(allTasks);
       rows.forEach(row=>{
         const tr=document.createElement('tr');
 
         const tdMe=document.createElement('td'); tdMe.setAttribute('data-label','Me');
         const amAssigned=(row.assignees||[]).includes(currentUser?.uid); const iAmDone=(row.completedBy||[]).includes(currentUser?.uid);
         const meCb=document.createElement('input'); meCb.type='checkbox'; meCb.checked=!!iAmDone; meCb.disabled=!amAssigned;
-        meCb.onchange=async()=>{try{const ref=doc(db,'tasks',row.id); if(meCb.checked) await updateDoc(ref,{completedBy:arrayUnion(currentUser.uid),updatedAt:serverTimestamp()}); else await updateDoc(ref,{completedBy:arrayRemove(currentUser.uid),updatedAt:serverTimestamp()}); toastMsg('Updated'); }catch(e){ alert('Could not update: '+e.message); meCb.checked=!meCb.checked; }};
+        meCb.onchange=async()=>{try{const ref=doc(db,'tasks',row.id); if(meCb.checked) await updateDoc(ref,{completedBy:arrayUnion(currentUser.uid),updatedAt:serverTimestamp()}); else await updateDoc(ref,{completedBy:arrayRemove(currentUser.uid),updatedAt:serverTimestamp()}); toastMsg('Updated'); }catch(e){ alert('Update failed: '+e.message); meCb.checked=!meCb.checked; }};
         tdMe.appendChild(meCb);
 
         const tdTitle=document.createElement('td'); tdTitle.setAttribute('data-label','Title');
@@ -387,21 +363,21 @@
         const tdDue=document.createElement('td'); tdDue.setAttribute('data-label','Due'); tdDue.textContent=row.dueDate||'';
 
         const tdAs=document.createElement('td'); tdAs.setAttribute('data-label','Assignees');
-        const avs=document.createElement('div'); avs.className='avatars'; const list=row.assignees||[]; const maxShow=4; list.slice(0,maxShow).forEach(uid=>avs.appendChild(avatarEl(uid)));
-        if(list.length>maxShow){const more=document.createElement('div'); more.className='avatar more'; more.textContent=`+${list.length-maxShow}`; avs.appendChild(more);} tdAs.appendChild(avs);
+        const avs=document.createElement('div'); avs.className='avatars'; (row.assignees||[]).forEach(uid=>avs.appendChild((()=>{const el=document.createElement('div'); el.className='avatar'; const u=usersMap.get(uid)||{}; el.textContent=(u.name||u.email||'?').charAt(0).toUpperCase(); return el;})())); tdAs.appendChild(avs);
 
         const tdDone=document.createElement('td'); tdDone.setAttribute('data-label','Done'); tdDone.textContent=`${(row.completedBy||[]).length}/${(row.assignees||[]).length}`;
 
         const tdAct=document.createElement('td'); tdAct.setAttribute('data-label','Actions');
         const bEdit=document.createElement('button'); bEdit.className='secondary'; bEdit.textContent='Edit';
-        const bAssign=document.createElement('button'); bAssign.className='secondary'; bAssign.textContent='Assign';
-        if(!isMod){ bEdit.disabled=true; bAssign.disabled=true; }
-        tdAct.appendChild(bEdit); tdAct.appendChild(bAssign);
+        const bDel=document.createElement('button'); bDel.className='danger'; bDel.textContent='Delete';
+        if(!isMod){ bEdit.disabled=true; bDel.disabled=true; }
+        tdAct.appendChild(bEdit); tdAct.appendChild(bDel);
 
+        // inline editor
         const trEdit=document.createElement('tr'); const tdEdit=document.createElement('td'); tdEdit.colSpan=7; trEdit.appendChild(tdEdit); trEdit.className='hidden';
         const panel=document.createElement('div'); panel.className='card';
         panel.innerHTML=`
-          <div class="row"><input id="eTitle" placeholder="Title" value="${row.title||''}"></div>
+          <div class="row"><input id="eTitle" value="${row.title||''}" placeholder="Title"></div>
           <div class="row"><textarea id="eDesc" placeholder="Description">${row.description||''}</textarea></div>
           <div class="row">
             <select id="ePrio">
@@ -414,6 +390,7 @@
           <div class="row"><select id="eAss" multiple></select></div>
           <div class="row"><button id="eSave">Save</button><button id="eCancel" class="secondary">Cancel</button></div>`;
         tdEdit.appendChild(panel);
+
         function openEditor(){
           if(!isMod) return;
           trEdit.classList.remove('hidden');
@@ -423,7 +400,7 @@
           }
           trEdit.scrollIntoView({behavior:'smooth', block:'center'});
         }
-        bEdit.onclick=openEditor; bAssign.onclick=openEditor;
+        bEdit.onclick=openEditor;
         panel.querySelector('#eCancel').onclick=()=> trEdit.classList.add('hidden');
         panel.querySelector('#eSave').onclick=async()=>{ try{
           const ref=doc(db,'tasks',row.id);
@@ -436,335 +413,194 @@
           trEdit.classList.add('hidden'); toastMsg('Task updated');
         }catch(e){ alert('Save failed: '+e.message); }};
 
+        bDel.onclick=async()=>{ if(!isMod) return;
+          if(!confirm('Delete this task?')) return;
+          try{ await deleteDoc(doc(db,'tasks',row.id)); toastMsg('Task deleted'); }catch(e){ alert('Delete failed: '+e.message); }
+        };
+
         tr.appendChild(tdMe); tr.appendChild(tdTitle); tr.appendChild(tdPr); tr.appendChild(tdDue); tr.appendChild(tdAs); tr.appendChild(tdDone); tr.appendChild(tdAct);
-        taskTbody.appendChild(tr); taskTbody.appendChild(trEdit);
+        tbody.appendChild(tr); tbody.appendChild(trEdit);
       });
     }
 
-    /* Create single task */
+    // create single task
     $('btnCreate').onclick=async()=>{
       if(!isMod) return alert('Only moderators can create.');
-      const title=newTitle.value.trim(); if(!title) return alert('Enter a title');
-      const desc=newDesc.value.trim(); const prio=newPriority.value||'normal'; const due=newDue.value||null;
-      const ass=Array.from(newAssignees.selectedOptions).map(o=>o.value);
+      const title=$('newTitle').value.trim(); if(!title) return alert('Enter a title');
+      const desc=$('newDesc').value.trim(); const prio=$('newPriority').value||'normal'; const due=$('newDue').value||null;
+      const ass=Array.from($('newAssignees').selectedOptions).map(o=>o.value);
       const assignees=ass.length?ass:[currentUser.uid];
       await addDoc(collection(db,'tasks'),{title,description:desc,priority:prio,dueDate:due,assignees,completedBy:[],createdBy:currentUser.uid,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
-      newTitle.value=''; newDesc.value=''; newPriority.value='normal'; newDue.value=''; for(const o of newAssignees.options)o.selected=false;
+      $('newTitle').value=''; $('newDesc').value=''; $('newPriority').value='normal'; $('newDue').value=''; for(const o of $('newAssignees').options)o.selected=false;
       toastMsg('Task created');
     };
 
-    /* CSV (single) */
-    function parseCsvRaw(file){ return new Promise((resolve,reject)=> Papa.parse(file,{header:false,skipEmptyLines:true,complete:res=>resolve(res.data),error:reject})); }
-    function splitAreaFocus(areaCell){
-      if(!areaCell) return {title:'', desc:''};
-      let s=String(areaCell).trim(); let title=s, desc='';
-      const focusMatch = s.match(/^(.*?)[–-]\s*focus on\s*(.*)$/i);
-      if(focusMatch){ title=focusMatch[1].trim(); desc='Focus: '+focusMatch[2].trim(); }
-      else{ const dash = s.split(/–|-/); if(dash.length>1){ title=dash[0].trim(); desc=dash.slice(1).join('-').trim(); } }
-      return {title, desc};
+    // Month/Year selects
+    function fillMonthYear(selM, selY){
+      selM.innerHTML='<option value="">Month…</option>';
+      "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(' ').forEach((m,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=m;selM.appendChild(o);});
+      selY.innerHTML='<option value="">Year…</option>';
+      const y0=new Date().getFullYear(); for(let y=y0-1;y<=y0+2;y++){const o=document.createElement('option');o.value=y;o.textContent=y;selY.appendChild(o);}
     }
-    function buildTasksFromSingleCsv(rows, year, month){
-      const COL_NAME=0, COL_DAY_START=2, COL_DAY_END=32, COL_AREA=33, COL_REF=34;
-      const lib = new Map();
-      for(const r of rows){
-        const area=r[COL_AREA], ref=r[COL_REF];
-        if(area && ref){
-          const {title, desc} = splitAreaFocus(area);
-          lib.set(String(ref).trim(), {title: title || `Ref ${ref}`, desc});
-        }
-      }
+    fillMonthYear($('impMonth'),$('impYear')); fillMonthYear($('ocrMonth'),$('ocrYear'));
+
+    // CSV (name + day refs only)
+    function parseCsvRaw(file){ return new Promise((resolve,reject)=> Papa.parse(file,{header:false,skipEmptyLines:true,complete:res=>resolve(res.data),error:reject})); }
+    function buildTasksFromCsv(rows, year, month){
+      const COL_NAME=0, COL_DAY_START=2, COL_DAY_END=32;
       const last=endOfMonth(year, month); const dueStr=last.toISOString().slice(0,10);
-      const today=new Date(); const daysLeft=Math.ceil((last - new Date(today.getFullYear(), today.getMonth(), today.getDate()))/86400000);
-      const basePriority=priorityFromDaysLeft(daysLeft);
+      const daysLeft=Math.ceil((last - new Date())/86400000); const basePriority=priorityFromDaysLeft(daysLeft);
       const tasks=[];
       for(const r of rows){
         const name=r[COL_NAME]; if(!name) continue;
-        let hasAny=false; for(let c=COL_DAY_START;c<=COL_DAY_END;c++){ if(r[c]){hasAny=true;break;} } if(!hasAny) continue;
-        const assUid = nameToUid(String(name));
-        for(let day=1; day<=31; day++){
-          const col = COL_DAY_START + (day-1); const v = r[col]; if(!v) continue;
-          const ref = String(v).trim(); if(!lib.has(ref)) continue;
-          const {title, desc} = lib.get(ref);
-          tasks.push({title, description:desc, dueDate:dueStr, priority:basePriority, scheduledDay: day, ref, assignees: assUid ? [assUid] : [], unresolvedAssignee: assUid? null : String(name).trim()});
+        const assUid=nameToUid(String(name));
+        for(let d=1; d<=31; d++){
+          const col=COL_DAY_START+(d-1); const v=r[col]; if(!v) continue;
+          const ref=String(parseInt(v,10)); if(!refLib[ref]) continue; // unknown ref, skip
+          const {title,desc}=refLib[ref];
+          tasks.push({title, description:desc, dueDate:dueStr, priority:basePriority, ref, scheduledDay:d, assignees:assUid?[assUid]:[], unresolvedAssignee:assUid?null:String(name)});
         }
       }
       return tasks;
     }
-    $('btnClearCsv').onclick=()=>{ csvOne.value=''; csvList.innerHTML=''; csvPreview.classList.add('hidden'); csvInfo.textContent=''; };
-    $('btnParseSingleCsv').onclick=async()=>{
+    $('btnClearCsv').onclick=()=>{ $('csvFile').value=''; $('csvList').innerHTML=''; $('csvPreview').classList.add('hidden'); $('csvInfo').textContent=''; };
+    $('btnParseCsv').onclick=async()=>{
       if(!isMod) return alert('Only moderators can import.');
-      const m=parseInt(impMonth.value,10), y=parseInt(impYear.value,10);
-      if(!m||!y) return alert('Pick Month and Year');
-      const f=csvOne.files?.[0]; if(!f) return alert('Select the CSV file');
+      const m=parseInt($('impMonth').value,10), y=parseInt($('impYear').value,10);
+      if(!m||!y) return alert('Pick Month & Year');
+      const f=$('csvFile').files?.[0]; if(!f) return alert('Select CSV');
+      $('csvInfo').textContent='Parsing…';
       try{
-        csvInfo.textContent='Parsing…';
-        const rows = await parseCsvRaw(f);
-        const tasks = buildTasksFromSingleCsv(rows, y, m);
-        if(!tasks.length){ csvInfo.innerHTML='<span class="danger">No tasks found. Check CSV layout.</span>'; return; }
-        csvInfo.innerHTML = `<span class="ok">Previewing ${tasks.length} task(s). Due: last day of ${m}/${y}. Priority auto-set by days left.</span>`;
-        csvList.innerHTML='';
-        tasks.forEach((t)=>{ const row=document.createElement('div'); row.className='card mini';
-          const who = t.assignees.length ? '✔ matched user' : `<span class="danger">⚠ not matched: ${t.unresolvedAssignee}</span>`;
-          row.innerHTML = `<div><strong>${t.title}</strong> — ${t.description||''}</div><div>Ref ${t.ref}, Day ${t.scheduledDay}, Due ${t.dueDate}, Priority ${t.priority}</div><div>${who}</div>`;
-          csvList.appendChild(row);
-        });
-        csvPreview.classList.remove('hidden');
-        btnCreateCsvTasks.dataset.payload = JSON.stringify(tasks);
-      }catch(e){ csvInfo.innerHTML=`<span class="danger">Parse failed: ${e.message}</span>`; }
+        const rows=await parseCsvRaw(f);
+        const tasks=buildTasksFromCsv(rows,y,m);
+        if(!tasks.length){ $('csvInfo').innerHTML='<span class="dangerText">No tasks found.</span>'; return; }
+        $('csvInfo').innerHTML=`<span class="ok">Previewing ${tasks.length} task(s).</span>`;
+        const list=$('csvList'); list.innerHTML='';
+        tasks.forEach(t=>{ const d=document.createElement('div'); d.className='card mini'; d.innerHTML=`<div><strong>${t.title}</strong> — ${t.description||''}</div><div>Ref ${t.ref}, Day ${t.scheduledDay}, Due ${t.dueDate}, Priority ${t.priority}</div><div>${t.assignees.length?'✔ matched user':('<span class="dangerText">⚠ not matched: '+t.unresolvedAssignee+'</span>')}</div>`; list.appendChild(d); });
+        $('csvPreview').classList.remove('hidden');
+        $('btnCreateCsvTasks').dataset.payload=JSON.stringify(tasks);
+      }catch(e){ $('csvInfo').innerHTML=`<span class="dangerText">Parse failed: ${e.message}</span>`; }
     };
     $('btnCreateCsvTasks').onclick=async()=>{
-      if(!isMod) return alert('Only moderators can create.');
       const raw=$('btnCreateCsvTasks').dataset.payload; if(!raw) return;
-      const tasks=JSON.parse(raw);
-      let created=0, skipped=0;
+      const tasks=JSON.parse(raw); let created=0;
       for(const t of tasks){
-        const ass = t.assignees.length ? t.assignees : (currentUser ? [currentUser.uid] : []);
-        try{
-          await addDoc(collection(db,'tasks'),{ title:t.title, description:t.description, priority:t.priority, dueDate:t.dueDate, assignees:ass, completedBy:[], ref:t.ref, scheduledDay:t.scheduledDay, createdBy:currentUser.uid, createdAt:serverTimestamp(), updatedAt:serverTimestamp() });
-          created++;
-        }catch{ skipped++; }
+        const ass=t.assignees.length?t.assignees:[currentUser.uid];
+        await addDoc(collection(db,'tasks'),{title:t.title,description:t.description,priority:t.priority,dueDate:t.dueDate,assignees:ass,completedBy:[],ref:t.ref,scheduledDay:t.scheduledDay,createdBy:currentUser.uid,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+        created++;
       }
-      toastMsg(`Created ${created} task(s)` + (skipped?`, skipped ${skipped}`:''));
-      csvPreview.classList.add('hidden'); csvList.innerHTML=''; csvInfo.textContent=''; csvOne.value='';
+      toastMsg(`Created ${created} task(s)`); $('btnClearCsv').click();
     };
 
-    /* ===== Image pre-processing (canvas) ===== */
-    async function preprocessImageToBlob(file){
-      const img = new Image(); img.crossOrigin='anonymous';
-      const url = URL.createObjectURL(file);
-      await new Promise((res,rej)=>{ img.onload=()=>res(); img.onerror=rej; img.src=url; });
-      const maxW = 2000; // limit size to speed OCR
-      const scale = Math.min(1, maxW / img.width);
-      const w = Math.round(img.width*scale), h = Math.round(img.height*scale);
-      const canvas = document.createElement('canvas'); canvas.width=w; canvas.height=h;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img,0,0,w,h);
-      // grayscale + contrast + threshold
-      const im = ctx.getImageData(0,0,w,h);
-      const d = im.data; const contrast = 1.25; const threshold = 160; // tweakable
-      for(let i=0;i<d.length;i+=4){
-        let r=d[i], g=d[i+1], b=d[i+2];
-        let y = 0.2126*r + 0.7152*g + 0.0722*b;       // luminance
-        y = (y-128)*contrast + 128;                   // contrast
-        y = Math.max(0, Math.min(255, y));
-        const bw = y > threshold ? 255 : 0;           // binarize
-        d[i]=d[i+1]=d[i+2]=bw; d[i+3]=255;
-      }
-      ctx.putImageData(im,0,0);
-      const blob = await new Promise(res=> canvas.toBlob(res,'image/png',1));
-      URL.revokeObjectURL(url);
-      return blob;
-    }
+    // --------- OCR (names + numbers only) ----------
+    let ocrImageBlob=null;
+    $('sheetImage').onchange=()=>{const f=$('sheetImage').files?.[0]; if(!f) return; ocrImageBlob=f; $('sheetPreview').classList.remove('hidden'); $('ocrStatus').textContent=`Selected: ${f.name}`; $('previewList').innerHTML=''; $('bulkActions').classList.add('hidden');};
+    ;['dragenter','dragover'].forEach(evt=>$('dropZone').addEventListener(evt,e=>{e.preventDefault(); $('dropZone').classList.add('drag');}));
+    ;['dragleave','drop'].forEach(evt=>$('dropZone').addEventListener(evt,e=>{e.preventDefault(); $('dropZone').classList.remove('drag');}));
+    $('dropZone').addEventListener('drop',(e)=>{const f=e.dataTransfer.files?.[0]; if(f && f.type.startsWith('image/')){ ocrImageBlob=f; $('sheetPreview').classList.remove('hidden'); $('ocrStatus').textContent=`Selected: ${f.name}`; $('previewList').innerHTML=''; $('bulkActions').classList.add('hidden'); }});
+    $('btnShowOcrText').onclick=()=>$('ocrText').classList.toggle('hidden');
+    $('btnClearPreview').onclick=()=>{ $('sheetImage').value=''; ocrImageBlob=null; $('sheetPreview').classList.add('hidden'); $('ocrStatus').textContent=''; $('previewList').innerHTML=''; $('bulkActions').classList.add('hidden'); $('ocrText').textContent=''; $('previewDiag').textContent=''; };
 
-    /* ===== OCR v4 (block parsing) ===== */
-    let ocrImageBlob = null;
-    sheetImage.onchange = () => { const f = sheetImage.files?.[0]; if(!f) return; ocrImageBlob=f; sheetPreview.classList.remove('hidden'); ocrStatus.textContent=`Selected: ${f.name}`; previewList.innerHTML=''; $('bulkActions').classList.add('hidden'); };
-    ;['dragenter','dragover'].forEach(evt=>dropZone.addEventListener(evt,e=>{e.preventDefault(); dropZone.classList.add('drag');}));
-    ;['dragleave','drop'].forEach(evt=>dropZone.addEventListener(evt,e=>{e.preventDefault(); dropZone.classList.remove('drag');}));
-    dropZone.addEventListener('drop', (e)=>{ const f=e.dataTransfer.files?.[0]; if(f && f.type.startsWith('image/')){ ocrImageBlob=f; sheetPreview.classList.remove('hidden'); ocrStatus.textContent=`Selected: ${f.name}`; previewList.innerHTML=''; $('bulkActions').classList.add('hidden'); } });
-
-    function normalizeDigits(s){
-      return s.replace(/\bO\b/g,'0').replace(/\bS\b/g,'5').replace(/\bI\b/g,'1').replace(/\bl\b/g,'1').replace(/[–—]/g,'-');
-    }
-
-    // Join wrapped lines into blocks; last 1–2 digit number becomes Ref
-    function buildRefLibFromBlocks(lines){
-      const lib = new Map();
-      // locate header line with "Area" and "Ref" if present
-      let start = lines.findIndex(l => /area/i.test(l) && /\bref\b/i.test(l));
-      if (start === -1) start = 0; else start++;
-
-      let block = '';
-      const flush = () => {
-        const s = block.trim(); if(!s) return;
-        const nums = s.match(/\b(\d{1,2})\b/g);
-        if(nums && nums.length){
-          const ref = String(parseInt(nums[nums.length-1],10));
-          // area = remove trailing ref + "Ref" word fragments
-          let area = s.replace(new RegExp(`\\b${ref}\\b\\s*$`),'').replace(/\bref\b[:\s]*$/i,'').trim();
-          // collapse spaces
-          area = area.replace(/\s{2,}/g,' ');
-          // title + optional focus
-          let title = area, desc = '';
-          const m = area.match(/^(.*?)[-–]\s*focus on\s*(.*)$/i);
-          if (m){ title=m[1].trim(); desc='Focus: '+m[2].trim(); }
-          if (title) lib.set(ref, {title, desc});
-        }
-        block = '';
-      };
-
-      for(let i=start;i<lines.length;i++){
-        const ln = lines[i];
-        if (/legend/i.test(ln)) { flush(); break; }
-        // end a block if line is just a small number OR obvious row separator
-        if (/^\s*\d{1,2}\s*$/.test(ln)) { block += ' ' + ln; flush(); continue; }
-        // accumulate; many sheets wrap area then put ref at end or next line
-        block += (block ? ' ' : '') + ln;
-        // heuristic: if line ends with a small number, flush
-        if (/\b\d{1,2}\s*$/.test(ln)) flush();
-      }
-      flush();
-      return lib;
-    }
-
-    function parseOcrToTasks(rawText, year, month){
-      const cleaned = normalizeDigits(rawText);
-      const lines = cleaned.split(/\r?\n/).map(s=>s.replace(/\s+$/,'').trim()).filter(Boolean);
-
-      const lib = buildRefLibFromBlocks(lines);
-
-      // Assignments (left grid)
-      const assignments = [];
-      const nameRow = /^([A-Za-z][A-Za-z .()'-]+)\s*[:\-]?\s*(.*)$/;
+    function normalize(s){ return s.replace(/[–—]/g,'-'); }
+    function parseNamesAndRefs(text){
+      const lines=text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+      const assignments=[];
       for(const ln of lines){
-        const n = ln.match(nameRow);
-        if(!n) continue;
-        const name = n[1].trim();
-        const rest = n[2].trim();
-        const refs = (rest.match(/\b([0-9]{1,2})\b/g)||[]);
-        if(refs.length===0) continue;
-        assignments.push({name, refs: refs.map(r=>String(parseInt(r,10)))});
+        // “Name ... numbers”
+        const m=ln.match(/^([A-Za-z][A-Za-z .()'-]+?)\s+(.+)$/);
+        if(!m) continue;
+        const name=m[1].trim();
+        const nums=(m[2].match(/\b(\d{1,2})\b/g)||[]).map(n=>String(parseInt(n,10)));
+        if(nums.length) assignments.push({name, refs:nums});
       }
-
-      // Build tasks
-      const last=endOfMonth(year, month); const dueStr=last.toISOString().slice(0,10);
-      const today=new Date(); const daysLeft=Math.ceil((last - new Date(today.getFullYear(), today.getMonth(), today.getDate()))/86400000);
-      const basePriority=priorityFromDaysLeft(daysLeft);
-
-      const tasks=[];
-      for(const a of assignments){
-        const assUid = nameToUid(a.name);
-        let dayIndex=1;
-        for(const ref of a.refs){
-          if(!lib.has(ref)) continue;
-          const {title, desc} = lib.get(ref);
-          tasks.push({
-            title, description:desc, dueDate:dueStr, priority:basePriority,
-            scheduledDay: dayIndex++, ref,
-            assignees: assUid ? [assUid] : [],
-            unresolvedAssignee: assUid ? null : a.name
-          });
-        }
-      }
-
-      return { tasks, counts:{ lines:lines.length, refs:lib.size, names:assignments.length } };
+      return {assignments, lineCount:lines.length};
     }
 
-    $('btnShowOcrText').onclick = ()=>{ $('ocrText').classList.toggle('hidden'); };
-
-    $('btnClearPreview').onclick = () => {
-      sheetImage.value = ''; ocrImageBlob = null; sheetPreview.classList.add('hidden');
-      ocrStatus.textContent = ''; previewList.innerHTML = ''; $('bulkActions').classList.add('hidden');
-      $('ocrText').textContent = ''; $('previewDiag').textContent = '';
-    };
-
-    $('btnExtract').onclick = async () => {
-      if (!isMod) return alert('Only moderators can use Scan Sheet.');
-      if (!ocrImageBlob) return alert('Choose an image first.');
-      const m=parseInt(impMonth.value,10), y=parseInt(impYear.value,10);
-      if(!m||!y) return alert('Pick Month and Year (used for due date)');
-      if (!window.Tesseract) return alert('OCR library not loaded yet.');
-
-      ocrStatus.textContent = 'Enhancing image…';
-      let preBlob;
-      try{ preBlob = await preprocessImageToBlob(ocrImageBlob); }
-      catch{ preBlob = ocrImageBlob; } // fall back
-
-      ocrStatus.textContent = 'Reading image…'; previewList.innerHTML=''; $('bulkActions').classList.add('hidden'); $('previewDiag').textContent='';
+    $('btnExtract').onclick=async()=>{
+      if(!isMod) return alert('Only moderators can use Scan Sheet.');
+      if(!ocrImageBlob) return alert('Choose an image first.');
+      const m=parseInt($('ocrMonth').value,10), y=parseInt($('ocrYear').value,10); if(!m||!y) return alert('Pick Month & Year');
+      $('ocrStatus').textContent='Reading image…';
       try{
-        const { data } = await Tesseract.recognize(preBlob, 'eng', { logger: p => { if (p.status) ocrStatus.textContent = `${p.status} ${p.progress?Math.round(p.progress*100)+'%':''}`; } });
-        const text = data.text||'';
-        $('ocrText').textContent = text;
-        const { tasks, counts } = parseOcrToTasks(text, y, m);
+        const {data}=await Tesseract.recognize(ocrImageBlob,'eng',{logger:p=>{$('ocrStatus').textContent = p.status ? `${p.status} ${p.progress?Math.round(p.progress*100)+'%':''}`:'Reading image…';}});
+        const raw=normalize(data.text||''); $('ocrText').textContent=raw;
+        const {assignments,lineCount}=parseNamesAndRefs(raw);
+        const last=endOfMonth(y,m), dueStr=last.toISOString().slice(0,10), daysLeft=Math.ceil((last - new Date())/86400000), basePriority=priorityFromDaysLeft(daysLeft);
 
-        if (!counts.refs) {
-          ocrStatus.innerHTML = '<span class="danger">Still can’t find the right-table “Ref” rows. Try a closer, flatter photo with the **right table fully in frame** (or use CSV).</span>';
-          $('previewDiag').textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
-          return;
-        }
-        if (!counts.names) {
-          ocrStatus.innerHTML = '<span class="danger">Found the tasks table, but no name rows with day numbers. Reframe the left grid, or use CSV.</span>';
-          $('previewDiag').textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
-          return;
-        }
-        if(!tasks.length){
-          ocrStatus.innerHTML = '<span class="danger">Parsed refs and names, but numbers didn’t match any Ref rows.</span>';
-          $('previewDiag').textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
-          return;
+        const tasks=[];
+        for(const a of assignments){
+          const uid=nameToUid(a.name);
+          let dayIdx=1;
+          for(const ref of a.refs){
+            if(!refLib[ref]) continue; // unknown ref, skip
+            const {title,desc}=refLib[ref];
+            tasks.push({title, description:desc, dueDate:dueStr, priority:basePriority, ref, scheduledDay:dayIdx++, assignees:uid?[uid]:[], unresolvedAssignee:uid?null:a.name});
+          }
         }
 
-        ocrStatus.innerHTML = `<span class="ok">Parsed ${tasks.length} candidate task(s).</span>`;
-        $('previewDiag').textContent = `Diagnostics: lines=${counts.lines}, refs=${counts.refs}, names=${counts.names}`;
+        $('previewDiag').textContent=`Lines:${lineCount}  refs-known:${Object.keys(refLib).length}  people:${assignments.length}`;
+        if(!tasks.length){ $('ocrStatus').innerHTML='<span class="dangerText">No tasks parsed. Ensure the left grid is sharp and close, or use CSV.</span>'; return; }
+        $('ocrStatus').innerHTML=`<span class="ok">Parsed ${tasks.length} candidate task(s).</span>`;
 
-        tasks.forEach((t,i)=>{
-          const row=document.createElement('div'); row.className='card mini';
-          const who = t.assignees.length ? '✔ matched user' : `<span class="danger">⚠ not matched: ${t.unresolvedAssignee}</span>`;
-          row.innerHTML = `<label class="mini"><input type="checkbox" class="pv-check" data-i="${i}" checked> Create</label>
-            <div><strong>${t.title}</strong> — ${t.description||''}</div>
-            <div>Ref ${t.ref}, Day ${t.scheduledDay}, Due ${t.dueDate}, Priority ${t.priority}</div>
-            <div>${who}</div>`;
-          $('previewList').appendChild(row);
+        const list=$('previewList'); list.innerHTML='';
+        tasks.forEach((t,i)=>{ const d=document.createElement('div'); d.className='card mini';
+          d.innerHTML=`<label class="mini"><input type="checkbox" class="pv-check" data-i="${i}" checked> Create</label>
+          <div><strong>${t.title}</strong> — ${t.description||''}</div>
+          <div>Ref ${t.ref}, Day ${t.scheduledDay}, Due ${t.dueDate}, Priority ${t.priority}</div>
+          <div>${t.assignees.length?'✔ matched user':('<span class="dangerText">⚠ not matched: '+t.unresolvedAssignee+'</span>')}</div>`;
+          list.appendChild(d);
         });
         $('bulkActions').classList.remove('hidden');
-        $('btnCreateFromPreview').onclick = async ()=>{
+
+        $('btnCreateFromPreview').onclick=async()=>{
           let created=0;
-          const checks = document.querySelectorAll('.pv-check');
+          const checks=document.querySelectorAll('.pv-check');
           for(const chk of checks){
             if(!chk.checked) continue;
-            const i = parseInt(chk.dataset.i,10);
-            const t = tasks[i];
-            const ass = t.assignees.length ? t.assignees : (currentUser ? [currentUser.uid] : []);
-            await addDoc(collection(db,'tasks'),{ title:t.title, description:t.description, priority:t.priority, dueDate:t.dueDate, assignees:ass, completedBy:[], ref:t.ref, scheduledDay:t.scheduledDay, createdBy:currentUser.uid, createdAt:serverTimestamp(), updatedAt:serverTimestamp() });
+            const i=parseInt(chk.dataset.i,10); const t=tasks[i];
+            const ass=t.assignees.length?t.assignees:[currentUser.uid];
+            await addDoc(collection(db,'tasks'),{title:t.title,description:t.description,priority:t.priority,dueDate:t.dueDate,assignees:ass,completedBy:[],ref:t.ref,scheduledDay:t.scheduledDay,createdBy:currentUser.uid,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
             created++;
           }
           toastMsg(`Created ${created} task(s)`); $('btnClearPreview').click();
         };
-      }catch(e){ console.error(e); ocrStatus.innerHTML = `<span class="danger">OCR failed: ${e.message}</span>`; }
+      }catch(e){ $('ocrStatus').innerHTML=`<span class="dangerText">OCR failed: ${e.message}</span>`; }
     };
 
-    /* Profile + storage */
-    $('btnSaveProfile').onclick=async()=>{ if(!currentUser) return; try{ await saveMyProfile(currentUser.uid); toastMsg('Profile saved'); }catch(e){ alert('Error: '+e.message);} };
-    $('btnRefreshProfile').onclick=async()=>{ if(!currentUser) return; await loadMyProfile(currentUser.uid); };
-    $('btnUploadPhoto').onclick = async ()=>{
-      if(!currentUser) return alert('Sign in first.');
-      const f = $('profPhotoFile').files?.[0];
-      if(!f) return alert('Choose an image first.');
-      try{
-        const ext = (f.name.split('.').pop()||'jpg').toLowerCase().slice(0,5);
-        const r = sRef(storage, `profilePhotos/${currentUser.uid}.${ext}`);
-        await uploadBytes(r, f);
-        const url = await getDownloadURL(r);
-        $('profPhoto').value = url;
-        await saveMyProfile(currentUser.uid);
-        toastMsg('Photo uploaded');
-      }catch(e){ alert('Upload failed: '+e.message); }
-    };
+    // profile
+    $('btnSaveProfile').onclick=async()=>{ if(!currentUser) return; await setDoc(doc(db,'users',currentUser.uid),{name:$('profName').value.trim(),jobTitle:$('profJob').value.trim(),photoURL:$('profPhoto').value.trim(),updatedAt:serverTimestamp()},{merge:true}); toastMsg('Profile saved'); };
+    $('btnRefreshProfile').onclick=async()=>{ if(!currentUser) return; const s=await getDoc(doc(db,'users',currentUser.uid)); if(s.exists()){const u=s.data();$('profName').value=u.name||'';$('profJob').value=u.jobTitle||'';$('profPhoto').value=u.photoURL||'';} };
+    $('btnUploadPhoto').onclick=async()=>{ if(!currentUser) return alert('Sign in first.'); const f=$('profPhotoFile').files?.[0]; if(!f) return alert('Pick an image'); const ext=(f.name.split('.').pop()||'jpg').toLowerCase(); const r=sRef(storage,`profilePhotos/${currentUser.uid}.${ext}`); await uploadBytes(r,f); const url=await getDownloadURL(r); $('profPhoto').value=url; await setDoc(doc(db,'users',currentUser.uid),{photoURL:url},{merge:true}); toastMsg('Photo uploaded'); };
 
-    /* Auth */
-    $('btnSignIn').onclick=async()=>{ try{ await signInWithEmailAndPassword(auth,emailEl.value,passEl.value);}catch(e){ alert(e.message); } };
-    $('btnSignUp').onclick =async()=>{ try{ await createUserWithEmailAndPassword(auth,emailEl.value,passEl.value);}catch(e){ alert(e.message); } };
-    btnSignOut.onclick=async()=>{ await signOut(auth); };
+    // filters
+    ['searchInput','statusFilter','priorityFilter'].forEach(id=>$(id).addEventListener('input',renderTasks));
+    $('scopeFilter').addEventListener('change',watchTasks);
 
-    async function startData(){ await watchUsers(); scopeFilter.classList.toggle('hidden', !isMod); scopeFilter.value='mine'; await watchTasks(); }
+    // auth
+    $('btnSignIn').onclick=async()=>{ try{ await signInWithEmailAndPassword(auth,$('email').value,$('password').value);}catch(e){ alert(e.message); } };
+    $('btnSignUp').onclick=async()=>{ try{ await createUserWithEmailAndPassword(auth,$('email').value,$('password').value);}catch(e){ alert(e.message); } };
+    $('btnSignOut').onclick=async()=>{ await signOut(auth); };
+
+    async function startData(){ await loadRefs(); await watchUsers(); $('scopeFilter').classList.toggle('hidden',!isMod); $('scopeFilter').value='mine'; await watchTasks(); }
 
     onAuthStateChanged(auth, async (user)=>{
       currentUser=user||null;
       if(user){
-        btnSignOut.classList.remove('hidden');
-        authStatus.textContent=`Signed in`;
-        await ensureUserProfile(user); await loadMyProfile(user.uid);
+        $('btnSignOut').classList.remove('hidden');
+        $('authStatus').textContent='Signed in';
+        await ensureUserProfile(user);
         isMod = await isModerator(user.uid);
-        modHint.classList.toggle('hidden', isMod);
+        $('modHint').classList.toggle('hidden', isMod);
         startData(); go('#/tasks');
       }else{
-        btnSignOut.classList.add('hidden');
-        authStatus.textContent='Not signed in';
+        $('btnSignOut').classList.add('hidden');
+        $('authStatus').textContent='Not signed in';
         if (unsubTasks){unsubTasks();unsubTasks=null;} if (unsubUsers){unsubUsers();unsubUsers=null;}
-        allTasks=[]; taskTbody.innerHTML=''; go('#/auth');
+        allTasks=[]; $('taskTbody').innerHTML=''; go('#/auth');
       }
     });
 
-    window.addEventListener('load', ()=> go(location.hash || '#/auth'));
+    window.addEventListener('load',()=>go(location.hash||'#/auth'));
   </script>
 </body>
 </html>
